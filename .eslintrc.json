@@ -1,0 +1,91 @@
+{
+	"env": {
+		"browser": true,
+		"es6": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"airbnb/hooks",
+		"airbnb-typescript",
+		"plugin:react/recommended",
+		"plugin:react/jsx-runtime",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/recommended-requiring-type-checking",
+		"plugin:prettier/recommended",
+		"plugin:import/recommended"
+	],
+	// Specifying Parser
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"ecmaVersion": "latest",
+		"sourceType": "module",
+		"tsconfigRootDir": ".",
+		"project": ["./tsconfig.json"]
+	},
+	// Configuring third-party plugins
+	"plugins": ["react", "@typescript-eslint"],
+	// Resolve imports
+	"settings": {
+		"import/resolver": {
+			"typescript": {
+				"project": "./tsconfig.json"
+			}
+		},
+		"react": {
+			"version": "18.x"
+		}
+	},
+	"rules": {
+		"linebreak-style": "off",
+		// Configure prettier
+		"prettier/prettier": [
+			"error",
+			{
+				"printWidth": 80,
+				"endOfLine": "lf",
+				"singleQuote": true,
+				"tabWidth": 2,
+				"indentStyle": "space",
+				"useTabs": true,
+				"trailingComma": "es5"
+			}
+		],
+		// Disallow the `any` type.
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/ban-types": [
+			"error",
+			{
+				"extendDefaults": true,
+				"types": {
+					"{}": false
+				}
+			}
+		],
+		"react-hooks/exhaustive-deps": "off",
+		// Enforce the use of the shorthand syntax.
+		"object-shorthand": "error",
+		"no-console": "warn",
+		"import/no-unresolved": "off",
+		"default-param-last": "off",
+		"@typescript-eslint/default-param-last": "off",
+		"import/no-extraneous-dependencies": "off",
+		"react/jsx-props-no-spreading": "off",
+		"no-unused-vars": "off",
+		"no-undef": "off",
+		"react/function-component-definition": "off",
+		"import/prefer-default-export": "off",
+		"import/no-named-as-default": "off",
+		"react/require-default-props": "off",
+		"@typescript-eslint/no-unsafe-assignment": "off",
+		"@typescript-eslint/no-unsafe-call": "off",
+		"@typescript-eslint/no-unsafe-member-access": "off",
+		"@typescript-eslint/no-unsafe-return": "off",
+		"@typescript-eslint/no-unused-vars": "off",
+		"import/no-named-as-default-member": "off",
+		"@typescript-eslint/restrict-plus-operands": "off",
+		"@typescript-eslint/no-unsafe-argument": "off"
+	}
+}
