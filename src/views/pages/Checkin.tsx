@@ -36,8 +36,6 @@ const Checkin: React.FC = () => {
 	};
 	function handleCheckin(e: any) {
 		e.preventDefault();
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		console.log(`id: ${selectedVal}, code: ${code}`);
 
 		createCheckin(selectedVal, code || '-1', carId || '-1');
 	}

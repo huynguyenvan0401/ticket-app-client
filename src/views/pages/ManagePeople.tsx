@@ -117,7 +117,6 @@ const App: React.FC = () => {
 		sorter,
 		extra
 	) => {
-		console.log('params', pagination, filters, sorter, extra);
 		setFilteredInfo(filters);
 	};
 
@@ -160,7 +159,6 @@ const App: React.FC = () => {
 	};
 
 	const onCarChange = (value: string) => {
-		console.log(`selected ${value}`);
 		setEditNote((prev) => {
 			return {
 				...prev,
@@ -169,9 +167,7 @@ const App: React.FC = () => {
 		});
 	};
 
-	const onSearchCar = (value: string) => {
-		console.log('search:', value);
-	};
+	const onSearchCar = (value: string) => {};
 
 	// Modal confirm reset checkin
 	const [isModalResetOpen, setIsModalResetOpen] = useState(false);
@@ -421,7 +417,6 @@ const App: React.FC = () => {
 
 	// Select room
 	const onRoomChange = (value: string) => {
-		console.log(`selected ${value}`);
 		setEditNote((prev) => {
 			return {
 				...prev,
@@ -430,9 +425,7 @@ const App: React.FC = () => {
 		});
 	};
 
-	const onSearchRoom = (value: string) => {
-		console.log('search:', value);
-	};
+	const onSearchRoom = (value: string) => {};
 
 	return (
 		<>
