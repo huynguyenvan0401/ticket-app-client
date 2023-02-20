@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as peopleAction from 'state/actions/action-creators/peopleAction';
-import * as checkinAction from 'state/actions/action-creators/checkinAction';
-import * as carAction from 'state/actions/action-creators/carAction';
-import * as roomAction from 'state/actions/action-creators/roomAction';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Spinner from 'components/Spinner';
@@ -11,8 +8,8 @@ import {
 	SearchOutlined,
 	LockOutlined,
 	EditOutlined,
-	CloseCircleTwoTone,
 	CheckCircleTwoTone,
+	CloseCircleTwoTone,
 } from '@ant-design/icons';
 import type { InputRef } from 'antd';
 import {
@@ -26,7 +23,6 @@ import {
 	Table,
 	Tag,
 	Modal,
-	Spin,
 	Input,
 } from 'antd';
 import type { ColumnType, ColumnsType, TableProps } from 'antd/es/table';
@@ -45,54 +41,38 @@ const { TextArea } = Input;
 interface DataType {
 	key: React.Key;
 	account: string;
-	checkin: string;
 	phoneNumber: string;
-	note: string;
-	carId: string;
 	licensePlate: string;
+	carId: string;
+	note: string;
 	roomId: string;
 	roomType: string;
 	roomNumber: string;
+	checkin: string;
 }
 
 type DataIndex = keyof DataType;
 
-const App: React.FC = () => {
+const ViewPeopleCheckin: React.FC = () => {
 	// Bind actions
 	const dispatch = useDispatch();
 
-	const { fetchPeopleCheckinDrive, updateNote } = bindActionCreators(
+	const { fetchPeopleCheckin } = bindActionCreators(
 		peopleAction,
 		useDispatch()
 	);
-	const { resetCheckin, delCheckinByPeopleId, createCheckin } =
-		bindActionCreators(checkinAction, useDispatch());
-	const { fetchCar } = bindActionCreators(carAction, useDispatch());
-	const { fetchRoom } = bindActionCreators(roomAction, useDispatch());
+
+	// Call API to get data
+	useEffect(() => {
+		fetchPeopleCheckin();
+	}, []);
 
 	// Retrieve data from store
 	const message: Message = useSelector((state: RootState) => state.message);
 	const peopleStore: any = useSelector((state: RootState) => state.people);
-	const checkinStore = useSelector((state: RootState) => state.checkin);
-	const cars: any = useSelector((state: RootState) => state.car);
-	const rooms: any = useSelector((state: RootState) => state.room);
-
-	useEffect(() => {
-		fetchPeopleCheckinDrive();
-		fetchCar();
-		fetchRoom();
-		dispatch({ type: ActionType.CLEAR_MESSAGE });
-	}, []);
-
-	// useEffect(() => {
-	// 	const interval = setInterval(() => {
-	// 		fetchCheckin();
-	// 	}, 5000);
-	// 	return () => clearInterval(interval);
-	// }, []);
+	const checkinStore: any = useSelector((state: RootState) => state.checkin);
 
 	// Configure data table
-
 	const [filteredInfo, setFilteredInfo] = useState<
 		Record<string, FilterValue | null>
 	>({});
@@ -109,12 +89,12 @@ const App: React.FC = () => {
 				account: people.account,
 				checkin: people.isCheckedIn ? 'true' : 'false',
 				phoneNumber: people.phoneNumber,
-				note: people.note,
+				licensePlate: people.licensePlate,
 				carId: people.carId.toString(),
+				note: people.note,
 				roomId: people.roomId.toString(),
 				roomType: people.roomType,
 				roomNumber: people.roomNumber,
-				licensePlate: people.licensePlate,
 			}))
 		);
 	};
@@ -127,39 +107,6 @@ const App: React.FC = () => {
 	) => {
 		console.log('params', pagination, filters, sorter, extra);
 		setFilteredInfo(filters);
-	};
-
-	// Modal
-	const [isModalOpen, setIsModalOpen] = useState(false);
-
-	const [editNote, setEditNote] = useState<{
-		id: any;
-		note: any;
-		carId: string;
-		roomId: string;
-	}>({
-		id: '',
-		note: '',
-		carId: '',
-		roomId: '',
-	});
-
-	const showModal = () => {
-		setIsModalOpen(true);
-	};
-
-	const handleOk = () => {
-		void (async () => {
-			await Promise.all([
-				updateNote(editNote.id, editNote.note, editNote.carId, editNote.roomId),
-			]);
-			fetchPeopleCheckinDrive();
-			setIsModalOpen(false);
-		})();
-	};
-
-	const handleCancel = () => {
-		setIsModalOpen(false);
 	};
 
 	// Setting search column
@@ -264,57 +211,9 @@ const App: React.FC = () => {
 	});
 	// End setting search column
 
+	// Get table column
 	const getColumns = (): ColumnsType<DataType> => {
 		return [
-			{
-				title: 'Action',
-				key: 'action',
-				render: (_: any, record: any) => {
-					return (
-						<>
-							<EditOutlined
-								style={{ cursor: 'pointer' }}
-								onClick={() => {
-									setEditNote({
-										id: record.key,
-										note: record.note,
-										carId: record.carId,
-										roomId: record.roomId,
-									});
-									showModal();
-								}}
-							/>
-
-							{record.checkin === 'true' ? (
-								<CloseCircleTwoTone
-									style={{ cursor: 'pointer', marginLeft: '20px' }}
-									twoToneColor="#eb2f96"
-									onClick={() => {
-										void (async () => {
-											await Promise.all([delCheckinByPeopleId(record.key)]);
-											fetchPeopleCheckinDrive();
-										})();
-									}}
-								/>
-							) : (
-								<CheckCircleTwoTone
-									twoToneColor="#52c41a"
-									style={{ cursor: 'pointer', marginLeft: '20px' }}
-									onClick={() => {
-										void (async () => {
-											await Promise.all([
-												createCheckin(record.key, '', record.carId),
-											]);
-											fetchPeopleCheckinDrive();
-										})();
-									}}
-								/>
-							)}
-						</>
-					);
-				},
-				width: '10%',
-			},
 			{
 				title: 'Tên',
 				dataIndex: 'account',
@@ -356,27 +255,24 @@ const App: React.FC = () => {
 				},
 			},
 			{
-				title: 'Ghi chú',
-				dataIndex: 'note',
-				width: '30%',
-			},
-			{
 				title: 'Xe',
 				dataIndex: 'licensePlate',
+				filteredValue: filteredInfo.licensePlate || null,
 				width: '10%',
+				...getColumnSearchProps('licensePlate'),
 			},
 			{
 				title: 'Số phòng',
 				dataIndex: 'roomNumber',
 				filteredValue: filteredInfo.roomNumber || null,
-				width: '8%',
+				width: '10%',
 				...getColumnSearchProps('roomNumber'),
 			},
 			{
 				title: 'Vị trí phòng',
 				dataIndex: 'roomType',
 				filteredValue: filteredInfo.roomType || null,
-				width: '12%',
+				width: '15%',
 				...getColumnSearchProps('roomType'),
 			},
 			{
@@ -384,67 +280,19 @@ const App: React.FC = () => {
 				dataIndex: 'phoneNumber',
 				width: '10%',
 			},
+			{
+				title: 'Ghi chú',
+				dataIndex: 'note',
+				width: '35%',
+			},
 		];
-	};
-
-	// Modal confirm reset checkin
-	const [isModalResetOpen, setIsModalResetOpen] = useState(false);
-
-	const showModalReset = () => {
-		setIsModalResetOpen(true);
-	};
-
-	const handleOkReset = () => {
-		void (async () => {
-			await Promise.all([resetCheckin()]);
-			fetchPeopleCheckinDrive();
-			setIsModalResetOpen(false);
-		})();
-	};
-
-	const handleCancelReset = () => {
-		setIsModalResetOpen(false);
-	};
-
-	const onCarChange = (value: string) => {
-		console.log(`selected ${value}`);
-		setEditNote((prev) => {
-			return {
-				...prev,
-				carId: value,
-			};
-		});
-	};
-
-	const onSearchCar = (value: string) => {
-		console.log('search:', value);
-	};
-
-	const onRoomChange = (value: string) => {
-		console.log(`selected ${value}`);
-		setEditNote((prev) => {
-			return {
-				...prev,
-				roomId: value,
-			};
-		});
-	};
-
-	const onSearchRoom = (value: string) => {
-		console.log('search:', value);
 	};
 
 	return (
 		<>
-			{(peopleStore.isLoading ||
-				peopleStore.isUpdating ||
-				checkinStore.isRemoving ||
-				checkinStore.isCreating ||
-				checkinStore.isResetting) && <Spinner />}
-
+			{peopleStore.isLoading && <Spinner />}
 			<Title level={2} style={{ textAlign: 'center' }}>
-				Danh sách checkin xe:{' '}
-				{peopleStore.data.length && peopleStore.data[0].licensePlate}
+				Danh sách checkin
 			</Title>
 			<Button
 				onClick={clearTableFilters}
@@ -452,82 +300,7 @@ const App: React.FC = () => {
 			>
 				Xóa bộ lọc
 			</Button>
-			<Button danger onClick={showModalReset} style={{ marginBottom: '20px' }}>
-				Xóa thông tin checkin
-			</Button>
-			<Modal
-				title="Ghi chú"
-				open={isModalOpen}
-				onOk={handleOk}
-				onCancel={handleCancel}
-			>
-				<Select
-					style={{ marginBottom: '20px', width: '240px' }}
-					showSearch
-					value={editNote.carId}
-					placeholder="Chọn xe"
-					optionFilterProp="children"
-					onChange={onCarChange}
-					onSearch={onSearchCar}
-					filterOption={(input, option) =>
-						(option?.label ?? '')
-							.toString()
-							.toLowerCase()
-							.includes(input.toLowerCase())
-					}
-					options={
-						cars.length &&
-						cars.map((car: any) => ({
-							label: car.licensePlate,
-							value: car.id.toString(),
-						}))
-					}
-				/>
 
-				<Select
-					style={{ marginBottom: '20px', width: '240px' }}
-					showSearch
-					value={editNote.roomId}
-					placeholder="Chọn phòng"
-					optionFilterProp="children"
-					onChange={onRoomChange}
-					onSearch={onSearchRoom}
-					filterOption={(input, option) =>
-						(option?.label ?? '')
-							.toString()
-							.toLowerCase()
-							.includes(input.toLowerCase())
-					}
-					options={
-						rooms.length &&
-						rooms.map((room: any) => ({
-							label: 'Phòng ' + room.number,
-							value: room.id.toString(),
-						}))
-					}
-				/>
-				<TextArea
-					rows={4}
-					maxLength={230}
-					value={editNote.note}
-					onChange={(e) => {
-						setEditNote((prev) => {
-							return {
-								...prev,
-								note: e.target.value,
-							};
-						});
-					}}
-				/>
-			</Modal>
-			<Modal
-				title="Xóa hết thông tin checkin"
-				open={isModalResetOpen}
-				onOk={handleOkReset}
-				onCancel={handleCancelReset}
-			>
-				Cảnh báo: Bấm &quot;OK&quot; sẽ xóa hết thông tin checkin!
-			</Modal>
 			<div style={{ overflow: 'auto' }}>
 				<Table
 					columns={peopleStore.data && getColumns()}
@@ -540,4 +313,4 @@ const App: React.FC = () => {
 	);
 };
 
-export default App;
+export default ViewPeopleCheckin;

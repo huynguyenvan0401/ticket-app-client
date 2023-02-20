@@ -26,6 +26,7 @@ import {
 	CarOutlined,
 	QrcodeOutlined,
 	DingtalkOutlined,
+	UnorderedListOutlined,
 } from '@ant-design/icons';
 import {
 	Layout,
@@ -70,6 +71,10 @@ const RepoTwo: React.FC = () => {
 	}
 
 	const items: MenuItem[] = [
+		getItem('Xem danh sách', '99', <UnorderedListOutlined />, undefined, () => {
+			navigate('/checkin/view');
+			setCollapsed(true);
+		}),
 		getItem('Tài khoản', 'subUser', <UserOutlined />, [
 			getItem('Đăng xuất', '1', <LogoutOutlined />, undefined, () => {
 				navigate('/logout');

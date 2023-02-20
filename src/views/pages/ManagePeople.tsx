@@ -82,6 +82,7 @@ const App: React.FC = () => {
 	const peopleStore: any = useSelector((state: RootState) => state.people);
 	const cars: any = useSelector((state: RootState) => state.car);
 	const rooms: any = useSelector((state: RootState) => state.room);
+	const checkinStore: any = useSelector((state: RootState) => state.checkin);
 
 	// Configure data table
 	const [filteredInfo, setFilteredInfo] = useState<
@@ -140,9 +141,18 @@ const App: React.FC = () => {
 	};
 
 	const handleOk = () => {
-		updatePeople(editNote.id, editNote.note, editNote.carId, editNote.roomId);
-		fetchPeopleCheckin();
-		setIsModalOpen(false);
+		void (async () => {
+			await Promise.all([
+				updatePeople(
+					editNote.id,
+					editNote.note,
+					editNote.carId,
+					editNote.roomId
+				),
+			]);
+			fetchPeopleCheckin();
+			setIsModalOpen(false);
+		})();
 	};
 
 	const handleCancel = () => {
@@ -171,8 +181,11 @@ const App: React.FC = () => {
 	};
 
 	const handleOkReset = () => {
-		resetAllCheckin();
-		setIsModalResetOpen(false);
+		void (async () => {
+			await Promise.all([resetAllCheckin()]);
+			fetchPeopleCheckin();
+			setIsModalResetOpen(false);
+		})();
 	};
 
 	const handleCancelReset = () => {
@@ -307,7 +320,10 @@ const App: React.FC = () => {
 									style={{ cursor: 'pointer', marginLeft: '20px' }}
 									twoToneColor="#eb2f96"
 									onClick={() => {
-										delCheckinByPeopleId(record.key);
+										void (async () => {
+											await Promise.all([delCheckinByPeopleId(record.key)]);
+											fetchPeopleCheckin();
+										})();
 									}}
 								/>
 							) : (
@@ -315,7 +331,12 @@ const App: React.FC = () => {
 									twoToneColor="#52c41a"
 									style={{ cursor: 'pointer', marginLeft: '20px' }}
 									onClick={() => {
-										createCheckin(record.key, '', record.carId);
+										void (async () => {
+											await Promise.all([
+												createCheckin(record.key, '', record.carId),
+											]);
+											fetchPeopleCheckin();
+										})();
 									}}
 								/>
 							)}
@@ -415,7 +436,11 @@ const App: React.FC = () => {
 
 	return (
 		<>
-			{peopleStore.isLoading && <Spinner />}
+			{(peopleStore.isLoading ||
+				peopleStore.isUpdating ||
+				checkinStore.isRemoving ||
+				checkinStore.isCreating ||
+				checkinStore.isResetting) && <Spinner />}
 			<Title level={2} style={{ textAlign: 'center' }}>
 				Danh sách checkin
 			</Title>
