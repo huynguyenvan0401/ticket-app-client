@@ -16,17 +16,16 @@ const Checkin: React.FC = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const code = searchParams.get('code');
 	const carId = searchParams.get('carId');
-	const { fetchPeople } = bindActionCreators(peopleAction, useDispatch());
-	const { createCheckin, fetchCheckin } = bindActionCreators(
-		checkinAction,
+	const { fetchPeopleAccount } = bindActionCreators(
+		peopleAction,
 		useDispatch()
 	);
+	const { createCheckin } = bindActionCreators(checkinAction, useDispatch());
 	const peoples: People[] = useSelector((state: RootState) => state.people);
 	const message: Message = useSelector((state: RootState) => state.message);
 
 	useEffect(() => {
-		fetchPeople();
-		fetchCheckin();
+		fetchPeopleAccount();
 		dispatch({ type: ActionType.CLEAR_MESSAGE });
 	}, []);
 

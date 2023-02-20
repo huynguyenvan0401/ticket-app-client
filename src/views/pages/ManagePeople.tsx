@@ -45,75 +45,44 @@ interface DataType {
 	account: string;
 	phoneNumber: string;
 	licensePlate: string;
-	carId: string;
+	carId: any;
 	note: string;
-	roomId: string;
+	roomId: any;
 	roomType: string;
 	roomNumber: string;
+	checkin: any;
 }
 
 type DataIndex = keyof DataType;
 
 const App: React.FC = () => {
+	// Bind actions
 	const dispatch = useDispatch();
 
-	const { fetchPeople, updateNote, updatePeople } = bindActionCreators(
+	const { fetchPeopleCheckin, updatePeople } = bindActionCreators(
 		peopleAction,
 		useDispatch()
 	);
 
 	const { fetchCar } = bindActionCreators(carAction, useDispatch());
 	const { fetchRoom } = bindActionCreators(roomAction, useDispatch());
-	const {
-		createCheckin,
-		fetchCheckinAdmin,
-		delCheckinByPeopleId,
-		resetAllCheckin,
-	} = bindActionCreators(checkinAction, useDispatch());
-	const checkins = useSelector((state: RootState) => state.checkin);
-	const peoples: any = useSelector((state: RootState) => state.people);
+	const { createCheckin, delCheckinByPeopleId, resetAllCheckin } =
+		bindActionCreators(checkinAction, useDispatch());
 
-	const [peopleCheckin, setPeopleCheckin] = useState([]);
-
+	// Call API to get data
 	useEffect(() => {
-		const checkList: any = [];
-		peoples.map((people: any) => {
-			let checked = false;
-			checkins.map((checkin: any) => {
-				if (checkin.people.id === people.id) {
-					checked = true;
-					return;
-				}
-			});
-			checkList.push({
-				id: people.id,
-				account: people.account,
-				checkin: checked ? 'true' : 'false',
-				phoneNumber: people.phoneNumber,
-				licensePlate: people.car.licensePlate,
-				carId: people.car.id.toString(),
-				note: people.note,
-				roomId: people.room.id.toString(),
-				roomType: people.room.type,
-				roomNumber: people.room.number,
-			});
-		});
-
-		setPeopleCheckin(checkList);
-	}, [checkins, peoples]);
-
-	useEffect(() => {
-		fetchPeople();
 		fetchCar();
-		fetchCheckinAdmin();
 		fetchRoom();
+		fetchPeopleCheckin();
 	}, []);
 
+	// Retrieve data from store
 	const message: Message = useSelector((state: RootState) => state.message);
-
+	const peoples: any = useSelector((state: RootState) => state.people);
 	const cars: any = useSelector((state: RootState) => state.car);
 	const rooms: any = useSelector((state: RootState) => state.room);
 
+	// Configure data table
 	const [filteredInfo, setFilteredInfo] = useState<
 		Record<string, FilterValue | null>
 	>({});
@@ -123,10 +92,10 @@ const App: React.FC = () => {
 	};
 
 	const getData = (): DataType[] => {
-		return peopleCheckin.map((people: any) => ({
+		return peoples.map((people: any) => ({
 			key: people.id,
 			account: people.account,
-			checkin: people.checkin,
+			checkin: people.isCheckedIn,
 			phoneNumber: people.phoneNumber,
 			licensePlate: people.licensePlate,
 			carId: people.carId,
@@ -153,8 +122,8 @@ const App: React.FC = () => {
 	const [editNote, setEditNote] = useState<{
 		id: any;
 		note: any;
-		carId: string;
-		roomId: string;
+		carId: any;
+		roomId: any;
 	}>({
 		id: '',
 		note: '',
@@ -539,8 +508,8 @@ const App: React.FC = () => {
 			</Modal>
 			<div style={{ overflow: 'auto' }}>
 				<Table
-					columns={peoples && cars && getColumns()}
-					dataSource={peoples && cars && getData()}
+					columns={peoples && getColumns()}
+					dataSource={peoples && getData()}
 					onChange={onChange}
 					style={{ minWidth: '1200px' }}
 				/>

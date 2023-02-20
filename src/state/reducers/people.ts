@@ -9,7 +9,7 @@ const peopleReducer: Reducer = (
 	action: any
 ) => {
 	switch (action.type) {
-		case ActionType.FETCH_PEOPLE:
+		case ActionType.FETCH_PEOPLE_CHECKIN:
 			return action.payload;
 		case ActionType.FETCH_PEOPLE_DRIVE:
 			return action.payload;

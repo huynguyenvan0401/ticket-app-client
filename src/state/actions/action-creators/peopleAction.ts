@@ -1,31 +1,42 @@
 import axios from 'axios';
 import { ActionType } from 'state/actions/action-types/types';
 import authHeader from 'services/auth-header';
-import { fetchCheckin, fetchCheckinAdmin } from './checkinAction';
 
-export const fetchPeople = () => async (dispatch: any) => {
-	const data = await axios.get('http://localhost:8080/api/people');
-	dispatch({ type: ActionType.FETCH_PEOPLE, payload: data.data });
+// Role ADMIN: get list people checkin details for admin
+export const fetchPeopleCheckin = () => async (dispatch: any) => {
+	const data = await axios.get('http://localhost:8080/api/people', {
+		headers: authHeader(),
+	});
+	dispatch({ type: ActionType.FETCH_PEOPLE_CHECKIN, payload: data.data });
 };
 
-export const fetchPeopleDrive = () => async (dispatch: any) => {
+// Role DRIVER: get list people checkin details for driver
+export const fetchPeopleCheckinDrive = () => async (dispatch: any) => {
 	const data = await axios.get('http://localhost:8080/api/people/drive', {
 		headers: authHeader(),
 	});
-	dispatch({ type: ActionType.FETCH_PEOPLE_DRIVE, payload: data.data });
+	dispatch({ type: ActionType.FETCH_PEOPLE_CHECKIN_DRIVE, payload: data.data });
 };
 
-export const updateNote = (id: any, note: any) => async (dispatch: any) => {
-	await axios.post(
-		'http://localhost:8080/api/people/updateNoteByDriver',
-		{ id, note },
-		{
-			headers: authHeader(),
-		}
-	);
-	dispatch(fetchPeopleDrive()).then(dispatch(fetchCheckin()));
+// Role ALL: get people accounts list
+export const fetchPeopleAccount = () => async (dispatch: any) => {
+	const data = await axios.get('http://localhost:8080/api/people/account');
+	dispatch({ type: ActionType.FETCH_PEOPLE_ACCOUNT, payload: data.data });
 };
 
+// Used by driver
+export const updateNote =
+	(id: any, note: any, carId: any, roomId: any) => async (dispatch: any) => {
+		await axios.post(
+			'http://localhost:8080/api/people/updateNoteByDriver',
+			{ id, note, carId, roomId },
+			{
+				headers: authHeader(),
+			}
+		);
+	};
+
+// Used by admin
 export const updatePeople =
 	(id: any, note: any, carId: any, roomId: any) => async (dispatch: any) => {
 		await axios.post(
@@ -35,6 +46,4 @@ export const updatePeople =
 				headers: authHeader(),
 			}
 		);
-		dispatch(fetchPeople());
-		dispatch(fetchCheckinAdmin());
 	};
