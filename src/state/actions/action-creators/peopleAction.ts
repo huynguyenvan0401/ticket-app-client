@@ -1,18 +1,24 @@
 import axios from 'axios';
 import { ActionType } from 'state/actions/action-types/types';
 import authHeader from 'services/auth-header';
+import keys from 'config/keys';
 
 // Role ADMIN: get list people checkin details for admin
 export const fetchPeopleCheckin = () => async (dispatch: any) => {
-	const data = await axios.get('http://localhost:8080/api/people', {
+	dispatch({ type: ActionType.LOADING_PEOPLE_CHECKIN });
+
+	const data = await axios.get(keys.BASE_URL + '/api/people', {
 		headers: authHeader(),
 	});
+
+	console.log(data.data);
+
 	dispatch({ type: ActionType.FETCH_PEOPLE_CHECKIN, payload: data.data });
 };
 
 // Role DRIVER: get list people checkin details for driver
 export const fetchPeopleCheckinDrive = () => async (dispatch: any) => {
-	const data = await axios.get('http://localhost:8080/api/people/drive', {
+	const data = await axios.get(keys.BASE_URL + '/api/people/drive', {
 		headers: authHeader(),
 	});
 	dispatch({ type: ActionType.FETCH_PEOPLE_CHECKIN_DRIVE, payload: data.data });
@@ -20,7 +26,7 @@ export const fetchPeopleCheckinDrive = () => async (dispatch: any) => {
 
 // Role ALL: get people accounts list
 export const fetchPeopleAccount = () => async (dispatch: any) => {
-	const data = await axios.get('http://localhost:8080/api/people/account');
+	const data = await axios.get(keys.BASE_URL + '/api/people/account');
 	dispatch({ type: ActionType.FETCH_PEOPLE_ACCOUNT, payload: data.data });
 };
 
@@ -28,7 +34,7 @@ export const fetchPeopleAccount = () => async (dispatch: any) => {
 export const updateNote =
 	(id: any, note: any, carId: any, roomId: any) => async (dispatch: any) => {
 		await axios.post(
-			'http://localhost:8080/api/people/updateNoteByDriver',
+			keys.BASE_URL + '/api/people/updateNoteByDriver',
 			{ id, note, carId, roomId },
 			{
 				headers: authHeader(),
@@ -40,10 +46,11 @@ export const updateNote =
 export const updatePeople =
 	(id: any, note: any, carId: any, roomId: any) => async (dispatch: any) => {
 		await axios.post(
-			'http://localhost:8080/api/people/updatePeopleDrive',
+			keys.BASE_URL + '/api/people/updatePeopleDrive',
 			{ id, note, carId, roomId },
 			{
 				headers: authHeader(),
 			}
 		);
+		dispatch(fetchPeopleCheckin());
 	};

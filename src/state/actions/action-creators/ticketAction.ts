@@ -2,9 +2,10 @@ import axios from 'axios';
 import { Dispatch } from 'redux';
 import { ActionType } from 'state/actions/action-types/types';
 import { TicketAction } from 'state/actions';
+import keys from 'config/keys';
 
 export const fetchTicket = () => async (dispatch: Dispatch<TicketAction>) => {
-	const data = await axios.get('http://localhost:8080/api/ticket');
+	const data = await axios.get(keys.BASE_URL + '/api/ticket');
 	dispatch({ type: ActionType.FETCH_TICKET, payload: data.data });
 };
 

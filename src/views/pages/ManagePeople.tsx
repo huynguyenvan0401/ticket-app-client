@@ -6,6 +6,7 @@ import * as carAction from 'state/actions/action-creators/carAction';
 import * as roomAction from 'state/actions/action-creators/roomAction';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import Spinner from 'components/Spinner';
 import {
 	SearchOutlined,
 	LockOutlined,
@@ -45,12 +46,12 @@ interface DataType {
 	account: string;
 	phoneNumber: string;
 	licensePlate: string;
-	carId: any;
+	carId: string;
 	note: string;
-	roomId: any;
+	roomId: string;
 	roomType: string;
 	roomNumber: string;
-	checkin: any;
+	checkin: string;
 }
 
 type DataIndex = keyof DataType;
@@ -78,7 +79,7 @@ const App: React.FC = () => {
 
 	// Retrieve data from store
 	const message: Message = useSelector((state: RootState) => state.message);
-	const peoples: any = useSelector((state: RootState) => state.people);
+	const peopleStore: any = useSelector((state: RootState) => state.people);
 	const cars: any = useSelector((state: RootState) => state.car);
 	const rooms: any = useSelector((state: RootState) => state.room);
 
@@ -92,18 +93,21 @@ const App: React.FC = () => {
 	};
 
 	const getData = (): DataType[] => {
-		return peoples.map((people: any) => ({
-			key: people.id,
-			account: people.account,
-			checkin: people.isCheckedIn,
-			phoneNumber: people.phoneNumber,
-			licensePlate: people.licensePlate,
-			carId: people.carId,
-			note: people.note,
-			roomId: people.roomId,
-			roomType: people.roomType,
-			roomNumber: people.roomNumber,
-		}));
+		return (
+			peopleStore.data &&
+			peopleStore.data.map((people: any) => ({
+				key: people.id,
+				account: people.account,
+				checkin: people.isCheckedIn ? 'true' : 'false',
+				phoneNumber: people.phoneNumber,
+				licensePlate: people.licensePlate,
+				carId: people.carId.toString(),
+				note: people.note,
+				roomId: people.roomId.toString(),
+				roomType: people.roomType,
+				roomNumber: people.roomNumber,
+			}))
+		);
 	};
 
 	const onChange: TableProps<DataType>['onChange'] = (
@@ -137,6 +141,7 @@ const App: React.FC = () => {
 
 	const handleOk = () => {
 		updatePeople(editNote.id, editNote.note, editNote.carId, editNote.roomId);
+		fetchPeopleCheckin();
 		setIsModalOpen(false);
 	};
 
@@ -272,17 +277,7 @@ const App: React.FC = () => {
 				setTimeout(() => searchInput.current?.select(), 100);
 			}
 		},
-		render: (text) =>
-			searchedColumn === dataIndex ? (
-				<Highlighter
-					highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-					searchWords={[searchText]}
-					autoEscape
-					textToHighlight={text ? text.toString() : ''}
-				/>
-			) : (
-				text
-			),
+		render: (text) => text,
 	});
 	// End setting search column
 
@@ -379,14 +374,14 @@ const App: React.FC = () => {
 			{
 				title: 'Số phòng',
 				dataIndex: 'roomNumber',
-				filteredValue: filteredInfo.licensePlate || null,
+				filteredValue: filteredInfo.roomNumber || null,
 				width: '10%',
 				...getColumnSearchProps('roomNumber'),
 			},
 			{
 				title: 'Vị trí phòng',
 				dataIndex: 'roomType',
-				filteredValue: filteredInfo.licensePlate || null,
+				filteredValue: filteredInfo.roomType || null,
 				width: '10%',
 				...getColumnSearchProps('roomType'),
 			},
@@ -420,6 +415,7 @@ const App: React.FC = () => {
 
 	return (
 		<>
+			{peopleStore.isLoading && <Spinner />}
 			<Title level={2} style={{ textAlign: 'center' }}>
 				Danh sách checkin
 			</Title>
@@ -508,8 +504,8 @@ const App: React.FC = () => {
 			</Modal>
 			<div style={{ overflow: 'auto' }}>
 				<Table
-					columns={peoples && getColumns()}
-					dataSource={peoples && getData()}
+					columns={peopleStore.data && getColumns()}
+					dataSource={peopleStore.data && getData()}
 					onChange={onChange}
 					style={{ minWidth: '1200px' }}
 				/>
