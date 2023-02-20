@@ -4,18 +4,13 @@ import { TicketAction } from 'state/actions';
 
 const initialState: unknown[] = [];
 
-const peopleReducer: Reducer = (
-	state: unknown[] = initialState,
-	action: any
-) => {
+const roomReducer: Reducer = (state: unknown[] = initialState, action: any) => {
 	switch (action.type) {
-		case ActionType.FETCH_PEOPLE:
-			return action.payload;
-		case ActionType.FETCH_PEOPLE_DRIVE:
+		case ActionType.FETCH_ROOM:
 			return action.payload;
 		default:
 			return state;
 	}
 };
 
-export default peopleReducer;
+export default roomReducer;

@@ -4,6 +4,8 @@ import auth from './auth';
 import message from './message';
 import people from 'state/reducers/people';
 import checkin from 'state/reducers/checkin';
+import car from 'state/reducers/car';
+import room from 'state/reducers/room';
 
 export const rootReducer = combineReducers({
 	ticket,
@@ -11,5 +13,7 @@ export const rootReducer = combineReducers({
 	message,
 	people,
 	checkin,
+	car,
+	room,
 });
 export type RootState = ReturnType<typeof rootReducer>;

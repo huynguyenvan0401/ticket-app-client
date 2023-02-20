@@ -10,12 +10,41 @@ export const fetchCheckin = () => async (dispatch: any) => {
 	dispatch({ type: ActionType.FETCH_CHECKIN, payload: data.data });
 };
 
+export const fetchCheckinAdmin = () => async (dispatch: any) => {
+	const data = await axios.get(
+		'http://localhost:8080/api/checkin/getAllForAdmin',
+		{
+			headers: authHeader(),
+		}
+	);
+
+	dispatch({ type: ActionType.FETCH_CHECKIN, payload: data.data });
+};
+
 export const resetCheckin = () => async (dispatch: any) => {
 	await axios.delete('http://localhost:8080/api/checkin/drive', {
 		headers: authHeader(),
 	});
 
 	dispatch(fetchCheckin());
+};
+
+export const resetAllCheckin = () => async (dispatch: any) => {
+	await axios.delete('http://localhost:8080/api/checkin', {
+		headers: authHeader(),
+	});
+
+	dispatch(fetchCheckinAdmin());
+};
+
+export const delCheckinByPeopleId = (id: number) => async (dispatch: any) => {
+	await axios.delete(
+		`http://localhost:8080/api/checkin/deleteByPeopleId/${id}`,
+		{
+			headers: authHeader(),
+		}
+	);
+	dispatch(fetchCheckinAdmin());
 };
 
 export const createCheckin =
@@ -33,6 +62,7 @@ export const createCheckin =
 					status: 'success',
 				},
 			});
+			dispatch(fetchCheckinAdmin());
 		} catch (error: any) {
 			const message =
 				(error.response &&

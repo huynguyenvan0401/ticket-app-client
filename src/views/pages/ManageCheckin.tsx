@@ -1,10 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as peopleAction from 'state/actions/action-creators/peopleAction';
 import * as checkinAction from 'state/actions/action-creators/checkinAction';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
+	SearchOutlined,
+	LockOutlined,
+	EditOutlined,
+	CloseCircleTwoTone,
+	CheckCircleTwoTone,
+} from '@ant-design/icons';
+import type { InputRef } from 'antd';
+import {
+	Space,
 	Select,
 	Row,
 	Col,
@@ -16,21 +25,29 @@ import {
 	Modal,
 	Input,
 } from 'antd';
+import type { ColumnType, ColumnsType, TableProps } from 'antd/es/table';
+import type {
+	FilterConfirmProps,
+	FilterValue,
+	SorterResult,
+} from 'antd/es/table/interface';
+import Highlighter from 'react-highlight-words';
 import { RootState } from 'state/reducers';
 import { People, Message } from 'state/actions';
 import { ActionType } from 'state/actions/action-types/types';
 const { Title } = Typography;
-import type { ColumnsType, TableProps } from 'antd/es/table';
-import type { FilterValue, SorterResult } from 'antd/es/table/interface';
-import { LockOutlined, EditOutlined } from '@ant-design/icons';
 const { TextArea } = Input;
 
 interface DataType {
 	key: React.Key;
-	name: string;
-	age: number;
-	address: string;
+	account: string;
+	checkin: string;
+	phoneNumber: string;
+	note: string;
+	carId: string;
 }
+
+type DataIndex = keyof DataType;
 
 const App: React.FC = () => {
 	const dispatch = useDispatch();
@@ -39,19 +56,17 @@ const App: React.FC = () => {
 		peopleAction,
 		useDispatch()
 	);
-	const { fetchCheckin, resetCheckin } = bindActionCreators(
-		checkinAction,
-		useDispatch()
-	);
+	const { fetchCheckin, resetCheckin, delCheckinByPeopleId, createCheckin } =
+		bindActionCreators(checkinAction, useDispatch());
 	const message: Message = useSelector((state: RootState) => state.message);
-	const peoples: People[] = useSelector((state: RootState) => state.people);
+	const peoples: any = useSelector((state: RootState) => state.people);
 	const checkins = useSelector((state: RootState) => state.checkin);
 
 	const [peopleCheckin, setPeopleCheckin] = useState([]);
 
 	useEffect(() => {
 		const checkList: any = [];
-		peoples.map((people) => {
+		peoples.map((people: any) => {
 			let checked = false;
 			checkins.map((checkin: any) => {
 				if (checkin.people.id === people.id) {
@@ -65,6 +80,7 @@ const App: React.FC = () => {
 				checkin: checked ? 'true' : 'false',
 				phoneNumber: people.phoneNumber,
 				note: people.note,
+				carId: people.car.id.toString(),
 			});
 		});
 
@@ -77,28 +93,29 @@ const App: React.FC = () => {
 		dispatch({ type: ActionType.CLEAR_MESSAGE });
 	}, []);
 
-	useEffect(() => {
-		const interval = setInterval(() => {
-			fetchCheckin();
-		}, 5000);
-		return () => clearInterval(interval);
-	}, []);
+	// useEffect(() => {
+	// 	const interval = setInterval(() => {
+	// 		fetchCheckin();
+	// 	}, 5000);
+	// 	return () => clearInterval(interval);
+	// }, []);
 
 	const [filteredInfo, setFilteredInfo] = useState<
 		Record<string, FilterValue | null>
 	>({});
 
-	const clearFilters = () => {
+	const clearTableFilters = () => {
 		setFilteredInfo({});
 	};
 
-	const getData = () => {
+	const getData = (): DataType[] => {
 		return peopleCheckin.map((people: any) => ({
 			key: people.id,
 			account: people.account,
 			checkin: people.checkin,
 			phoneNumber: people.phoneNumber,
 			note: people.note,
+			carId: people.carId,
 		}));
 	};
 
@@ -133,23 +150,126 @@ const App: React.FC = () => {
 		setIsModalOpen(false);
 	};
 
-	const getColumns = () => {
+	// Setting search column
+	const [searchText, setSearchText] = useState('');
+	const [searchedColumn, setSearchedColumn] = useState('');
+	const searchInput = useRef<InputRef>(null);
+
+	const handleSearch = (
+		selectedKeys: string[],
+		confirm: (param?: FilterConfirmProps) => void,
+		dataIndex: DataIndex
+	) => {
+		confirm();
+		setSearchText(selectedKeys[0]);
+		setSearchedColumn(dataIndex);
+	};
+
+	const handleReset = (clearFilters: () => void) => {
+		clearFilters();
+		setSearchText('');
+	};
+
+	const getColumnSearchProps = (
+		dataIndex: DataIndex
+	): ColumnType<DataType> => ({
+		filterDropdown: ({
+			setSelectedKeys,
+			selectedKeys,
+			confirm,
+			clearFilters,
+			close,
+		}) => (
+			<div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+				<Input
+					ref={searchInput}
+					placeholder={`Search ${dataIndex}`}
+					value={selectedKeys[0]}
+					onChange={(e) =>
+						setSelectedKeys(e.target.value ? [e.target.value] : [])
+					}
+					onPressEnter={() =>
+						handleSearch(selectedKeys as string[], confirm, dataIndex)
+					}
+					style={{ marginBottom: 8, display: 'block' }}
+				/>
+				<Space>
+					<Button
+						type="primary"
+						onClick={() =>
+							handleSearch(selectedKeys as string[], confirm, dataIndex)
+						}
+						icon={<SearchOutlined />}
+						size="small"
+						style={{ width: 90 }}
+					>
+						Search
+					</Button>
+					<Button
+						onClick={() => clearFilters && handleReset(clearFilters)}
+						size="small"
+						style={{ width: 90 }}
+					>
+						Reset
+					</Button>
+					<Button
+						type="link"
+						size="small"
+						onClick={() => {
+							confirm({ closeDropdown: false });
+							setSearchText((selectedKeys as string[])[0]);
+							setSearchedColumn(dataIndex);
+						}}
+					>
+						Filter
+					</Button>
+					<Button
+						type="link"
+						size="small"
+						onClick={() => {
+							close();
+						}}
+					>
+						close
+					</Button>
+				</Space>
+			</div>
+		),
+		filterIcon: (filtered: boolean) => (
+			<SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+		),
+		onFilter: (value, record) =>
+			record[dataIndex]
+				.toString()
+				.toLowerCase()
+				.includes((value as string).toLowerCase()),
+		onFilterDropdownOpenChange: (visible) => {
+			if (visible) {
+				setTimeout(() => searchInput.current?.select(), 100);
+			}
+		},
+		render: (text) =>
+			searchedColumn === dataIndex ? (
+				<Highlighter
+					highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+					searchWords={[searchText]}
+					autoEscape
+					textToHighlight={text ? text.toString() : ''}
+				/>
+			) : (
+				text
+			),
+	});
+	// End setting search column
+
+	const getColumns = (): ColumnsType<DataType> => {
 		return [
 			{
 				title: 'Tên',
 				dataIndex: 'account',
 				filteredValue: filteredInfo.account || null,
-				filters:
-					peopleCheckin &&
-					peopleCheckin.map((people: any) => ({
-						text: people.account,
-						value: people.account,
-					})),
-
-				filterMode: 'tree',
-				filterSearch: true,
-				onFilter: (value: any, record: any) => record.account.startsWith(value),
 				width: '15%',
+				...getColumnSearchProps('account'),
 			},
 			{
 				title: 'Trạng thái',
@@ -157,11 +277,11 @@ const App: React.FC = () => {
 				filteredValue: filteredInfo.checkin || null,
 				filters: [
 					{
-						text: 'Checked',
+						text: 'Đã lên xe',
 						value: 'true',
 					},
 					{
-						text: 'Not Checked',
+						text: 'Chưa lên xe',
 						value: 'false',
 					},
 				],
@@ -197,15 +317,37 @@ const App: React.FC = () => {
 			{
 				title: 'Action',
 				key: 'action',
-				render: (_: any, record: any) => (
-					<EditOutlined
-						style={{ cursor: 'pointer' }}
-						onClick={() => {
-							setEditNote({ id: record.key, note: record.note });
-							showModal();
-						}}
-					/>
-				),
+				render: (_: any, record: any) => {
+					return (
+						<>
+							<EditOutlined
+								style={{ cursor: 'pointer' }}
+								onClick={() => {
+									setEditNote({ id: record.key, note: record.note });
+									showModal();
+								}}
+							/>
+
+							{record.checkin === 'true' ? (
+								<CloseCircleTwoTone
+									style={{ cursor: 'pointer', marginLeft: '20px' }}
+									twoToneColor="#eb2f96"
+									onClick={() => {
+										delCheckinByPeopleId(record.key);
+									}}
+								/>
+							) : (
+								<CheckCircleTwoTone
+									twoToneColor="#52c41a"
+									style={{ cursor: 'pointer', marginLeft: '20px' }}
+									onClick={() => {
+										createCheckin(record.key, '', record.carId);
+									}}
+								/>
+							)}
+						</>
+					);
+				},
 				width: '10%',
 			},
 		];
@@ -221,7 +363,6 @@ const App: React.FC = () => {
 	const handleOkReset = () => {
 		resetCheckin();
 		setIsModalResetOpen(false);
-		fetchCheckin();
 	};
 
 	const handleCancelReset = () => {
@@ -231,10 +372,10 @@ const App: React.FC = () => {
 	return (
 		<>
 			<Title level={2} style={{ textAlign: 'center' }}>
-				Danh sách checkin
+				Danh sách checkin xe: {peoples.length && peoples[0].car.licensePlate}
 			</Title>
 			<Button
-				onClick={clearFilters}
+				onClick={clearTableFilters}
 				style={{ marginBottom: '20px', marginRight: '20px' }}
 			>
 				Xóa bộ lọc
