@@ -45,19 +45,12 @@ export const createCheckin =
 			});
 
 			dispatch({ type: ActionType.CHECKIN_CREATED });
-
-			dispatch({
-				type: ActionType.SET_MESSAGE,
-				payload: {
-					message: 'Checked in!',
-					status: 'success',
-				},
-			});
 		} catch (error: any) {
+			console.log(error);
+
+			dispatch({ type: ActionType.CHECKIN_FAILED });
 			const message =
-				(error.response &&
-					error.response.data &&
-					error.response.data.message) ||
+				(error.response && error.response.data) ||
 				error.message ||
 				error.toString();
 

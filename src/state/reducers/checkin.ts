@@ -41,6 +41,22 @@ const checkinReducer: Reducer = (
 				isCreating: false,
 				isCreated: true,
 			};
+		case ActionType.CHECKIN_FAILED:
+			return {
+				...state,
+				isCreating: false,
+				isCreated: false,
+			};
+		case ActionType.INIT_CHECKIN:
+			return {
+				...state,
+				isCreating: false,
+				isCreated: false,
+				isRemoving: false,
+				isRemoved: false,
+				isResetting: false,
+				isResetted: false,
+			};
 		case ActionType.REMOVING_CHECKIN:
 			return {
 				...state,

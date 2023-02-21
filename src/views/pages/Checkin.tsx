@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as peopleAction from 'state/actions/action-creators/peopleAction';
 import * as checkinAction from 'state/actions/action-creators/checkinAction';
+import * as carAction from 'state/actions/action-creators/carAction';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Select, Row, Col, Typography, Alert, Button } from 'antd';
 import { RootState } from 'state/reducers';
 import { People, Message } from 'state/actions';
 import { ActionType } from 'state/actions/action-types/types';
+import { info } from 'console';
 const { Title } = Typography;
 
 const Checkin: React.FC = () => {
@@ -21,11 +23,17 @@ const Checkin: React.FC = () => {
 		useDispatch()
 	);
 	const { createCheckin } = bindActionCreators(checkinAction, useDispatch());
+	const { fetchCarById } = bindActionCreators(carAction, useDispatch());
+
 	const peopleStore = useSelector((state: RootState) => state.people);
 	const message: Message = useSelector((state: RootState) => state.message);
+	const checkinStore = useSelector((state: RootState) => state.checkin);
+	const infoStore = useSelector((state: RootState) => state.info);
 
 	useEffect(() => {
 		fetchPeopleAccount();
+		fetchCarById(carId || '-1');
+		dispatch({ type: ActionType.INIT_CHECKIN });
 		dispatch({ type: ActionType.CLEAR_MESSAGE });
 	}, []);
 
@@ -42,11 +50,20 @@ const Checkin: React.FC = () => {
 		createCheckin(selectedVal, code || '-1', carId || '-1');
 	}
 
+	useEffect(() => {
+		if (checkinStore.isCreated) {
+			navigate('/checkin/complete');
+		}
+	}, [checkinStore]);
+
 	return (
 		<>
 			<Row justify="center">
 				<Title level={2} style={{ marginBottom: '20px' }}>
-					Check in
+					Checkin xe: {` `}
+					{infoStore.car && infoStore.car.id
+						? infoStore.car.licensePlate
+						: 'Null'}
 				</Title>
 			</Row>
 
@@ -74,7 +91,7 @@ const Checkin: React.FC = () => {
 					md={{ span: 12 }}
 				>
 					<Select
-						style={{ marginBottom: '20px', width: '240px' }}
+						style={{ marginBottom: '10px', width: '100%' }}
 						showSearch
 						value={selectedVal}
 						placeholder="Chọn xe"
@@ -97,7 +114,7 @@ const Checkin: React.FC = () => {
 					/>
 				</Col>
 			</Row>
-			<Row justify={{ lg: 'center' }}>
+			<Row justify={{ lg: 'center' }} style={{ marginBottom: '50px' }}>
 				<Col
 					xs={{ span: 24 }}
 					xl={{ span: 6 }}

@@ -11,3 +11,10 @@ export const fetchCar = () => async (dispatch: any) => {
 	});
 	dispatch({ type: ActionType.FETCH_CAR, payload: data.data });
 };
+
+export const fetchCarById = (id: string) => async (dispatch: any) => {
+	const data = await axios.get(keys.BASE_URL + `/api/car/${id}`);
+	console.log(data.data);
+
+	dispatch({ type: ActionType.FETCH_CAR_INFO, payload: data.data });
+};
