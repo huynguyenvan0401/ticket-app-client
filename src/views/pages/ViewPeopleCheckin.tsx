@@ -15,6 +15,7 @@ import type { InputRef } from 'antd';
 import {
 	Space,
 	Select,
+	Tooltip,
 	Row,
 	Col,
 	Typography,
@@ -105,7 +106,6 @@ const ViewPeopleCheckin: React.FC = () => {
 		sorter,
 		extra
 	) => {
-		console.log('params', pagination, filters, sorter, extra);
 		setFilteredInfo(filters);
 	};
 
@@ -218,36 +218,36 @@ const ViewPeopleCheckin: React.FC = () => {
 				title: 'Tên',
 				dataIndex: 'account',
 				filteredValue: filteredInfo.account || null,
-				width: '10%',
+				width: '12%',
 				...getColumnSearchProps('account'),
 			},
 			{
-				title: 'Trạng thái',
+				title: 'Status',
 				dataIndex: 'checkin',
 				filteredValue: filteredInfo.checkin || null,
 				filters: [
 					{
-						text: 'Đã lên xe',
+						text: 'OK',
 						value: 'true',
 					},
 					{
-						text: 'Chưa lên xe',
+						text: 'NONE',
 						value: 'false',
 					},
 				],
 				onFilter: (value: any, record: any) => record.checkin.startsWith(value),
 				filterMode: 'tree',
-				width: '10%',
+				width: '8%',
 				render: (_: any, record: any) => {
 					return (
 						<>
 							{record.checkin === 'true' ? (
 								<Tag color="green" key={record.id}>
-									Đã lên xe
+									OK
 								</Tag>
 							) : (
 								<Tag color="volcano" key={record.id}>
-									Chưa lên xe
+									NONE
 								</Tag>
 							)}
 						</>
@@ -258,21 +258,21 @@ const ViewPeopleCheckin: React.FC = () => {
 				title: 'Xe',
 				dataIndex: 'licensePlate',
 				filteredValue: filteredInfo.licensePlate || null,
-				width: '10%',
+				width: '13%',
 				...getColumnSearchProps('licensePlate'),
 			},
 			{
-				title: 'Số phòng',
+				title: 'Phòng',
 				dataIndex: 'roomNumber',
 				filteredValue: filteredInfo.roomNumber || null,
-				width: '10%',
+				width: '8%',
 				...getColumnSearchProps('roomNumber'),
 			},
 			{
-				title: 'Vị trí phòng',
+				title: 'Khu',
 				dataIndex: 'roomType',
 				filteredValue: filteredInfo.roomType || null,
-				width: '15%',
+				width: '14%',
 				...getColumnSearchProps('roomType'),
 			},
 			{
@@ -284,6 +284,14 @@ const ViewPeopleCheckin: React.FC = () => {
 				title: 'Ghi chú',
 				dataIndex: 'note',
 				width: '35%',
+				ellipsis: {
+					showTitle: false,
+				},
+				render: (note) => (
+					<Tooltip placement="topLeft" title={note}>
+						{note}
+					</Tooltip>
+				),
 			},
 		];
 	};
@@ -306,7 +314,8 @@ const ViewPeopleCheckin: React.FC = () => {
 					columns={peopleStore.data && getColumns()}
 					dataSource={peopleStore.data && getData()}
 					onChange={onChange}
-					style={{ minWidth: '1200px' }}
+					style={{ minWidth: '1000px' }}
+					pagination={false}
 				/>
 			</div>
 		</>

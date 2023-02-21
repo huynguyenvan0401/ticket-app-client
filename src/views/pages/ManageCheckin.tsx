@@ -19,6 +19,7 @@ import {
 	Space,
 	Select,
 	Row,
+	Tooltip,
 	Col,
 	Typography,
 	Alert,
@@ -312,42 +313,42 @@ const App: React.FC = () => {
 						</>
 					);
 				},
-				width: '10%',
+				width: '8%',
 			},
 			{
 				title: 'Tên',
 				dataIndex: 'account',
 				filteredValue: filteredInfo.account || null,
-				width: '10%',
+				width: '12%',
 				...getColumnSearchProps('account'),
 			},
 			{
-				title: 'Trạng thái',
+				title: 'Status',
 				dataIndex: 'checkin',
 				filteredValue: filteredInfo.checkin || null,
 				filters: [
 					{
-						text: 'Đã lên xe',
+						text: 'OK',
 						value: 'true',
 					},
 					{
-						text: 'Chưa lên xe',
+						text: 'NONE',
 						value: 'false',
 					},
 				],
 				onFilter: (value: any, record: any) => record.checkin.startsWith(value),
 				filterMode: 'tree',
-				width: '10%',
+				width: '8%',
 				render: (_: any, record: any) => {
 					return (
 						<>
 							{record.checkin === 'true' ? (
 								<Tag color="green" key={record.id}>
-									Đã lên xe
+									OK
 								</Tag>
 							) : (
 								<Tag color="volcano" key={record.id}>
-									Chưa lên xe
+									NONE
 								</Tag>
 							)}
 						</>
@@ -357,25 +358,33 @@ const App: React.FC = () => {
 			{
 				title: 'Ghi chú',
 				dataIndex: 'note',
-				width: '30%',
+				width: '24%',
+				ellipsis: {
+					showTitle: false,
+				},
+				render: (note) => (
+					<Tooltip placement="topLeft" title={note}>
+						{note}
+					</Tooltip>
+				),
 			},
 			{
 				title: 'Xe',
 				dataIndex: 'licensePlate',
-				width: '10%',
+				width: '13%',
 			},
 			{
-				title: 'Số phòng',
+				title: 'Phòng',
 				dataIndex: 'roomNumber',
 				filteredValue: filteredInfo.roomNumber || null,
-				width: '8%',
+				width: '10%',
 				...getColumnSearchProps('roomNumber'),
 			},
 			{
-				title: 'Vị trí phòng',
+				title: 'Khu',
 				dataIndex: 'roomType',
 				filteredValue: filteredInfo.roomType || null,
-				width: '12%',
+				width: '15%',
 				...getColumnSearchProps('roomType'),
 			},
 			{
@@ -526,7 +535,8 @@ const App: React.FC = () => {
 					columns={peopleStore.data && getColumns()}
 					dataSource={peopleStore.data && getData()}
 					onChange={onChange}
-					style={{ minWidth: '1200px' }}
+					style={{ minWidth: '1000px' }}
+					pagination={false}
 				/>
 			</div>
 		</>

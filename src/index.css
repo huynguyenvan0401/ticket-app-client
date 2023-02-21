@@ -25,3 +25,8 @@ code {
 	align-items: center;
 	justify-content: center;
 }
+
+/* Override antd */
+.ant-table-cell {
+	padding: 8px !important;
+}

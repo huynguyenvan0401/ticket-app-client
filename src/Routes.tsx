@@ -27,7 +27,7 @@ export default function RoutePage() {
 				<Route path="/repos2" element={<RepoTwo />} />
 			</Route>
 
-			<Route path="/" element={<Navigate replace to="/home" />} />
+			<Route path="/" element={<Navigate replace to="/check/view" />} />
 			<Route path="*" element={<NotFound />} />
 		</Routes>
 	);

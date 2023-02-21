@@ -63,7 +63,7 @@ const Login: React.FC = () => {
 
 	useEffect(() => {
 		if (isLoggedIn) {
-			navigate('/home');
+			navigate('/checkin/view');
 		}
 		dispatch({ type: ActionType.CLEAR_MESSAGE });
 	}, [isLoggedIn]);

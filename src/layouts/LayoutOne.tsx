@@ -190,10 +190,10 @@ const RepoTwo: React.FC = () => {
 					/>
 					<Menu theme={menuTheme} mode="inline" items={items} />
 				</Sider>
-				<Content style={{ margin: '24px 16px 0' }}>
+				<Content style={{ padding: '0px' }}>
 					<div
 						style={{
-							padding: 24,
+							padding: 5,
 							background: colorBgContainer,
 						}}
 					>
