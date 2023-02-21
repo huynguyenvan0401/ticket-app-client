@@ -27,6 +27,7 @@ import {
 	QrcodeOutlined,
 	DingtalkOutlined,
 	UnorderedListOutlined,
+	LoginOutlined,
 } from '@ant-design/icons';
 import {
 	Layout,
@@ -71,16 +72,22 @@ const RepoTwo: React.FC = () => {
 	}
 
 	const items: MenuItem[] = [
-		getItem('Xem danh sách', '99', <UnorderedListOutlined />, undefined, () => {
+		!isLoggedIn &&
+			getItem('Đăng nhập', '4', <LoginOutlined />, undefined, () => {
+				navigate('/login');
+				setCollapsed(true);
+			}),
+		getItem('View Checkin', '5', <UnorderedListOutlined />, undefined, () => {
 			navigate('/checkin/view');
 			setCollapsed(true);
 		}),
-		getItem('Tài khoản', 'subUser', <UserOutlined />, [
-			getItem('Đăng xuất', '1', <LogoutOutlined />, undefined, () => {
-				navigate('/logout');
-				setCollapsed(true);
-			}),
-		]),
+		isLoggedIn &&
+			getItem('Tài khoản', 'subUser', <UserOutlined />, [
+				getItem('Đăng xuất', '1', <LogoutOutlined />, undefined, () => {
+					navigate('/logout');
+					setCollapsed(true);
+				}),
+			]),
 		user &&
 			user.roles.includes('DRIVER') &&
 			getItem('Lái xe', 'subDriver', <CarOutlined />, [
@@ -133,18 +140,16 @@ const RepoTwo: React.FC = () => {
 					}}
 				>
 					<Col>
-						{isLoggedIn && (
-							<>
-								{React.createElement(MenuOutlined, {
-									className: 'trigger',
-									style: { padding: '15px', fontSize: '20px' },
-									onClick: (e) => {
-										e.stopPropagation();
-										setCollapsed(!collapsed);
-									},
-								})}
-							</>
-						)}
+						<>
+							{React.createElement(MenuOutlined, {
+								className: 'trigger',
+								style: { padding: '15px', fontSize: '20px' },
+								onClick: (e) => {
+									e.stopPropagation();
+									setCollapsed(!collapsed);
+								},
+							})}
+						</>
 					</Col>
 					<Col
 						style={{
