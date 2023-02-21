@@ -50,6 +50,7 @@ interface DataType {
 	roomType: string;
 	roomNumber: string;
 	checkin: string;
+	isRoomMaster: string;
 }
 
 type DataIndex = keyof DataType;
@@ -66,6 +67,14 @@ const ViewPeopleCheckin: React.FC = () => {
 	// Call API to get data
 	useEffect(() => {
 		fetchPeopleCheckin();
+	}, []);
+
+	// auto refresh data
+	useEffect(() => {
+		const interval = setInterval(() => {
+			fetchPeopleCheckin();
+		}, 15000);
+		return () => clearInterval(interval);
 	}, []);
 
 	// Retrieve data from store
@@ -96,6 +105,7 @@ const ViewPeopleCheckin: React.FC = () => {
 				roomId: people.roomId.toString(),
 				roomType: people.roomType,
 				roomNumber: people.roomNumber,
+				isRoomMaster: people.isRoomMaster ? 'true' : 'false',
 			}))
 		);
 	};
@@ -278,12 +288,46 @@ const ViewPeopleCheckin: React.FC = () => {
 			{
 				title: 'SĐT',
 				dataIndex: 'phoneNumber',
-				width: '10%',
+				width: '12%',
+			},
+			{
+				title: 'Chủ phòng',
+				dataIndex: 'isRoomMaster',
+				filteredValue: filteredInfo.isRoomMaster || null,
+				filters: [
+					{
+						text: 'YES',
+						value: 'true',
+					},
+					{
+						text: 'NO',
+						value: 'false',
+					},
+				],
+				onFilter: (value: any, record: any) =>
+					record.isRoomMaster.startsWith(value),
+				filterMode: 'tree',
+				width: '6%',
+				render: (_: any, record: any) => {
+					return (
+						<>
+							{record.isRoomMaster === 'true' ? (
+								<Tag color="green" key={'isRoomMaster' + record.id}>
+									YES
+								</Tag>
+							) : (
+								<Tag color="volcano" key={'isRoomMaster' + record.id}>
+									NO
+								</Tag>
+							)}
+						</>
+					);
+				},
 			},
 			{
 				title: 'Ghi chú',
 				dataIndex: 'note',
-				width: '35%',
+				width: '27%',
 				ellipsis: {
 					showTitle: false,
 				},

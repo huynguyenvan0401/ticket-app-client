@@ -54,6 +54,7 @@ interface DataType {
 	roomId: string;
 	roomType: string;
 	roomNumber: string;
+	isRoomMaster: string;
 }
 
 type DataIndex = keyof DataType;
@@ -62,10 +63,12 @@ const App: React.FC = () => {
 	// Bind actions
 	const dispatch = useDispatch();
 
-	const { fetchPeopleCheckinDrive, updateNote } = bindActionCreators(
-		peopleAction,
-		useDispatch()
-	);
+	const {
+		fetchPeopleCheckinDrive,
+		updateNote,
+		fetchAccountByDriver,
+		addPeople,
+	} = bindActionCreators(peopleAction, useDispatch());
 	const { resetCheckin, delCheckinByPeopleId, createCheckin } =
 		bindActionCreators(checkinAction, useDispatch());
 	const { fetchCar } = bindActionCreators(carAction, useDispatch());
@@ -82,15 +85,17 @@ const App: React.FC = () => {
 		fetchPeopleCheckinDrive();
 		fetchCar();
 		fetchRoom();
+		fetchAccountByDriver();
 		dispatch({ type: ActionType.CLEAR_MESSAGE });
 	}, []);
 
-	// useEffect(() => {
-	// 	const interval = setInterval(() => {
-	// 		fetchCheckin();
-	// 	}, 5000);
-	// 	return () => clearInterval(interval);
-	// }, []);
+	useEffect(() => {
+		const interval = setInterval(() => {
+			fetchPeopleCheckinDrive();
+			fetchAccountByDriver();
+		}, 15000);
+		return () => clearInterval(interval);
+	}, []);
 
 	// Configure data table
 
@@ -116,6 +121,7 @@ const App: React.FC = () => {
 				roomType: people.roomType,
 				roomNumber: people.roomNumber,
 				licensePlate: people.licensePlate,
+				isRoomMaster: people.isRoomMaster ? 'true' : 'false',
 			}))
 		);
 	};
@@ -356,9 +362,43 @@ const App: React.FC = () => {
 				},
 			},
 			{
+				title: 'Chủ phòng',
+				dataIndex: 'isRoomMaster',
+				filteredValue: filteredInfo.isRoomMaster || null,
+				filters: [
+					{
+						text: 'YES',
+						value: 'true',
+					},
+					{
+						text: 'NO',
+						value: 'false',
+					},
+				],
+				onFilter: (value: any, record: any) =>
+					record.isRoomMaster.startsWith(value),
+				filterMode: 'tree',
+				width: '6%',
+				render: (_: any, record: any) => {
+					return (
+						<>
+							{record.isRoomMaster === 'true' ? (
+								<Tag color="green" key={'isRoomMaster' + record.id}>
+									YES
+								</Tag>
+							) : (
+								<Tag color="volcano" key={'isRoomMaster' + record.id}>
+									NO
+								</Tag>
+							)}
+						</>
+					);
+				},
+			},
+			{
 				title: 'Ghi chú',
 				dataIndex: 'note',
-				width: '24%',
+				width: '16%',
 				ellipsis: {
 					showTitle: false,
 				},
@@ -390,7 +430,7 @@ const App: React.FC = () => {
 			{
 				title: 'SĐT',
 				dataIndex: 'phoneNumber',
-				width: '10%',
+				width: '12%',
 			},
 		];
 	};
@@ -436,10 +476,42 @@ const App: React.FC = () => {
 
 	const onSearchRoom = (value: string) => {};
 
+	// Modal add people
+	const [isModalAddPeopleOpen, setIsModalAddPeopleOpen] = useState(false);
+	const [accountSelected, setAccountSelected] = useState('');
+
+	const showModalAddPeople = () => {
+		setIsModalAddPeopleOpen(true);
+	};
+
+	const handleOkAddPeople = () => {
+		void (async () => {
+			await Promise.all([addPeople(accountSelected)]);
+			fetchPeopleCheckinDrive();
+			fetchAccountByDriver();
+			setIsModalAddPeopleOpen(false);
+			setAccountSelected('');
+		})();
+	};
+
+	const handleCancelAddPeople = () => {
+		setIsModalAddPeopleOpen(false);
+	};
+
+	// Select dropdown add people
+
+	const onSelectAccountChange = (value: string) => {
+		setAccountSelected(value);
+	};
+
+	const onSearchAccount = (value: string) => {};
+
 	return (
 		<>
 			{(peopleStore.isLoading ||
 				peopleStore.isUpdating ||
+				peopleStore.isLoadingAccount ||
+				peopleStore.addingPeople ||
 				checkinStore.isRemoving ||
 				checkinStore.isCreating ||
 				checkinStore.isResetting) && <Spinner />}
@@ -454,9 +526,49 @@ const App: React.FC = () => {
 			>
 				Xóa bộ lọc
 			</Button>
-			<Button danger onClick={showModalReset} style={{ marginBottom: '20px' }}>
+			<Button
+				danger
+				onClick={showModalReset}
+				style={{ marginBottom: '20px', marginRight: '20px' }}
+			>
 				Xóa thông tin checkin
 			</Button>
+
+			<Button onClick={showModalAddPeople} style={{ marginBottom: '20px' }}>
+				Thêm người
+			</Button>
+
+			<Modal
+				title="Thêm người"
+				open={isModalAddPeopleOpen}
+				onOk={handleOkAddPeople}
+				onCancel={handleCancelAddPeople}
+			>
+				<Select
+					style={{ marginBottom: '20px', width: '240px' }}
+					showSearch
+					value={accountSelected}
+					placeholder="Nhập account..."
+					optionFilterProp="children"
+					onChange={onSelectAccountChange}
+					onSearch={onSearchAccount}
+					filterOption={(input, option) =>
+						(option?.label ?? '')
+							.toString()
+							.toLowerCase()
+							.includes(input.toLowerCase())
+					}
+					options={
+						peopleStore.accounts &&
+						peopleStore.accounts.length &&
+						peopleStore.accounts.map((people: any) => ({
+							label: people.account,
+							value: people.id.toString(),
+						}))
+					}
+				/>
+			</Modal>
+
 			<Modal
 				title="Ghi chú"
 				open={isModalOpen}

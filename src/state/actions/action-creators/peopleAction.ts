@@ -32,6 +32,28 @@ export const fetchPeopleAccount = () => async (dispatch: any) => {
 	dispatch({ type: ActionType.FETCH_PEOPLE_ACCOUNT, payload: data.data });
 };
 
+export const fetchAccountByDriver = () => async (dispatch: any) => {
+	dispatch({ type: ActionType.LOADING_PEOPLE_ACCOUNT });
+	const data = await axios.get(keys.BASE_URL + '/api/people/account/drive', {
+		headers: authHeader(),
+	});
+	dispatch({ type: ActionType.FETCH_PEOPLE_ACCOUNT, payload: data.data });
+};
+
+export const addPeople = (id: any) => async (dispatch: any) => {
+	dispatch({ type: ActionType.ADDING_PEOPLE });
+
+	await axios.post(
+		keys.BASE_URL + '/api/people/updateCar',
+		{ id },
+		{
+			headers: authHeader(),
+		}
+	);
+
+	dispatch({ type: ActionType.PEOPLE_ADDED });
+};
+
 // Used by driver
 export const updateNote =
 	(id: any, note: any, carId: any, roomId: any) => async (dispatch: any) => {

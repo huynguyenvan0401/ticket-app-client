@@ -8,12 +8,14 @@ const initialState: {
 	data: [];
 	accounts: [];
 	isLoadingAccount: boolean;
+	addingPeople: boolean;
 } = {
 	isLoading: false,
 	isUpdating: false,
 	data: [],
 	accounts: [],
 	isLoadingAccount: false,
+	addingPeople: false,
 };
 const peopleReducer: Reducer = (
 	state: {
@@ -22,6 +24,7 @@ const peopleReducer: Reducer = (
 		data: [];
 		accounts: [];
 		isLoadingAccount: boolean;
+		addingPeople: boolean;
 	} = initialState,
 	action: any
 ) => {
@@ -33,11 +36,13 @@ const peopleReducer: Reducer = (
 			};
 		case ActionType.FETCH_PEOPLE_CHECKIN:
 			return {
+				...state,
 				isLoading: false,
 				data: action.payload,
 			};
 		case ActionType.FETCH_PEOPLE_CHECKIN_DRIVE:
 			return {
+				...state,
 				isLoading: false,
 				data: action.payload,
 			};
@@ -61,6 +66,16 @@ const peopleReducer: Reducer = (
 				...state,
 				accounts: action.payload,
 				isLoadingAccount: false,
+			};
+		case ActionType.ADDING_PEOPLE:
+			return {
+				...state,
+				addingPeople: true,
+			};
+		case ActionType.PEOPLE_ADDED:
+			return {
+				...state,
+				addingPeople: false,
 			};
 		default:
 			return state;
