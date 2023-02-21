@@ -2,13 +2,27 @@ import { ActionType } from 'state/actions/action-types/types';
 import type { Reducer } from '@reduxjs/toolkit';
 import { TicketAction } from 'state/actions';
 
-const initialState: { isLoading: boolean; isUpdating: boolean; data: [] } = {
+const initialState: {
+	isLoading: boolean;
+	isUpdating: boolean;
+	data: [];
+	accounts: [];
+	isLoadingAccount: boolean;
+} = {
 	isLoading: false,
 	isUpdating: false,
 	data: [],
+	accounts: [],
+	isLoadingAccount: false,
 };
 const peopleReducer: Reducer = (
-	state: { isLoading: boolean; data: [] } = initialState,
+	state: {
+		isLoading: boolean;
+		isUpdating: boolean;
+		data: [];
+		accounts: [];
+		isLoadingAccount: boolean;
+	} = initialState,
 	action: any
 ) => {
 	switch (action.type) {
@@ -36,6 +50,17 @@ const peopleReducer: Reducer = (
 			return {
 				...state,
 				isUpdating: false,
+			};
+		case ActionType.LOADING_PEOPLE_ACCOUNT:
+			return {
+				...state,
+				isLoadingAccount: true,
+			};
+		case ActionType.FETCH_PEOPLE_ACCOUNT:
+			return {
+				...state,
+				accounts: action.payload,
+				isLoadingAccount: false,
 			};
 		default:
 			return state;

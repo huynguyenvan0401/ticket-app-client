@@ -27,6 +27,7 @@ export const fetchPeopleCheckinDrive = () => async (dispatch: any) => {
 
 // Role ALL: get people accounts list
 export const fetchPeopleAccount = () => async (dispatch: any) => {
+	dispatch({ type: ActionType.LOADING_PEOPLE_ACCOUNT });
 	const data = await axios.get(keys.BASE_URL + '/api/people/account');
 	dispatch({ type: ActionType.FETCH_PEOPLE_ACCOUNT, payload: data.data });
 };

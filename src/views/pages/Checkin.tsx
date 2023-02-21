@@ -21,7 +21,7 @@ const Checkin: React.FC = () => {
 		useDispatch()
 	);
 	const { createCheckin } = bindActionCreators(checkinAction, useDispatch());
-	const peoples: People[] = useSelector((state: RootState) => state.people);
+	const peopleStore = useSelector((state: RootState) => state.people);
 	const message: Message = useSelector((state: RootState) => state.message);
 
 	useEffect(() => {
@@ -29,11 +29,13 @@ const Checkin: React.FC = () => {
 		dispatch({ type: ActionType.CLEAR_MESSAGE });
 	}, []);
 
-	const [selectedVal, setSelectedVal] = useState('0');
+	const [selectedVal, setSelectedVal] = useState('');
 
-	const handleChange = (value: string) => {
+	const onAccountChange = (value: string) => {
 		setSelectedVal(value);
 	};
+
+	const onSearchAccount = (value: string) => {};
 	function handleCheckin(e: any) {
 		e.preventDefault();
 
@@ -72,26 +74,25 @@ const Checkin: React.FC = () => {
 					md={{ span: 12 }}
 				>
 					<Select
+						style={{ marginBottom: '20px', width: '240px' }}
 						showSearch
-						style={{ width: '100%' }}
-						placeholder="Search to Select"
-						onChange={handleChange}
+						value={selectedVal}
+						placeholder="Chọn xe"
 						optionFilterProp="children"
+						onChange={onAccountChange}
+						onSearch={onSearchAccount}
 						filterOption={(input, option) =>
-							(option?.label ?? '').includes(input)
-						}
-						filterSort={(optionA, optionB) =>
-							(optionA?.label ?? '')
+							(option?.label ?? '')
+								.toString()
 								.toLowerCase()
-								.localeCompare((optionB?.label ?? '').toLowerCase())
+								.includes(input.toLowerCase())
 						}
 						options={
-							peoples.length
-								? peoples.map((people: People, index: number) => ({
-										value: people.id.toString(),
-										label: people.account.toLowerCase(),
-								  }))
-								: undefined
+							peopleStore.accounts.length &&
+							peopleStore.accounts.map((peopleAccount: any) => ({
+								label: peopleAccount.account,
+								value: peopleAccount.id.toString(),
+							}))
 						}
 					/>
 				</Col>
