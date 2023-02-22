@@ -11,6 +11,7 @@ import { People, Message } from 'state/actions';
 import { ActionType } from 'state/actions/action-types/types';
 import { info } from 'console';
 const { Title } = Typography;
+import Spinner from 'components/Spinner';
 
 const Checkin: React.FC = () => {
 	const navigate = useNavigate();
@@ -58,6 +59,7 @@ const Checkin: React.FC = () => {
 
 	return (
 		<>
+			{checkinStore.isCreating && <Spinner />}
 			<Row justify="center">
 				<Title level={2} style={{ marginBottom: '20px' }}>
 					Checkin xe: {` `}

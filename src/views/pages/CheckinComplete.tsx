@@ -18,24 +18,18 @@ const CheckinComplete: React.FC = () => {
 
 	return (
 		<>
-			<div className="js-container container"></div>
-
-			<div
-				style={{
-					textAlign: 'center',
-					position: 'fixed',
-					width: '100%',
-					height: '100%',
-					top: '150px',
-					left: '0px',
-				}}
-			>
-				<div className="checkmark-circle">
-					<div className="background"></div>
-					<div className="checkmark draw"></div>
+			<div className="flex-center">
+				<div>
+					<CheckCircleTwoTone
+						twoToneColor="#52c41a"
+						style={{ fontSize: '60px', marginBottom: '20px' }}
+					/>
 				</div>
-				<h1 style={{ marginTop: '30px' }}>Congratulations!</h1>
-				<p>Bạn đã checkin thành công!</p>
+				<div>
+					<Title level={2} type="success">
+						Checkin thành công!
+					</Title>
+				</div>
 			</div>
 		</>
 	);
