@@ -56,9 +56,7 @@ export const login =
 			return true;
 		} catch (error: any) {
 			const message =
-				(error.response &&
-					error.response.data &&
-					error.response.data.message) ||
+				(error.response && error.response.data && error.response.data) ||
 				error.message ||
 				error.toString();
 

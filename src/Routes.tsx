@@ -2,7 +2,6 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Login from 'views/pages/Login';
-import RepoTwo from 'views/pages/RepoTwo';
 import NotFound from 'views/errorPage/NotFound';
 import Logout from 'views/pages/Logout';
 import Home from 'views/pages/Home';
@@ -26,7 +25,6 @@ export default function RoutePage() {
 				<Route path="/checkin" element={<Checkin />} />
 				<Route path="/checkin/complete" element={<CheckinComplete />} />
 				<Route path="/checkin/manage" element={<ManageCheckin />} />
-				<Route path="/repos2" element={<RepoTwo />} />
 			</Route>
 
 			<Route path="/" element={<Navigate replace to="/check/view" />} />

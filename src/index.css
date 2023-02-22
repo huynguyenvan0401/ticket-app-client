@@ -37,3 +37,17 @@ code {
 	flex-direction: column;
 	align-items: center;
 }
+
+.login-form-wrap {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	padding: 50px 30px;
+}
+
+.login-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 300px;
+}

@@ -1,9 +1,18 @@
-import * as React from 'react';
+import React from 'react';
+import notFound from 'assets/png/404-error.png';
 
-export default function NotFound() {
+const NotFound: React.FC = () => {
 	return (
 		<>
-			<h1>Not found!</h1>
+			<div className="flex-center">
+				<img
+					src={notFound}
+					style={{ width: '200px', height: '200px' }}
+					alt="Not found"
+				/>
+			</div>
 		</>
 	);
-}
+};
+
+export default NotFound;

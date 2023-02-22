@@ -203,11 +203,12 @@ const RepoTwo: React.FC = () => {
 						/>
 						<Menu theme={menuTheme} mode="inline" items={items} />
 					</Sider>
-					<Content style={{ padding: '0px' }}>
+					<Content style={{ padding: '0px', height: '100%' }}>
 						<div
 							style={{
-								padding: 5,
+								padding: '5px',
 								background: colorBgContainer,
+								minHeight: '95vh',
 							}}
 						>
 							<Outlet />
