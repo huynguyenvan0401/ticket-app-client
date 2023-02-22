@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import notFound from 'assets/png/404-error.png';
 
 const NotFound: React.FC = () => {

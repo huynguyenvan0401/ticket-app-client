@@ -140,7 +140,18 @@ const RepoTwo: React.FC = () => {
 			}}
 		>
 			<Layout style={{ minHeight: '100vh', overflow: 'hidden' }}>
-				<Header style={{ padding: 0, background: colorBgContainer }}>
+				<Header
+					style={{
+						position: 'fixed',
+						top: 0,
+						left: 0,
+						right: 0,
+						zIndex: 1000,
+						width: '100%',
+						background: colorBgContainer,
+						padding: '0px',
+					}}
+				>
 					<Row
 						justify="space-between"
 						style={{
@@ -203,10 +214,10 @@ const RepoTwo: React.FC = () => {
 						/>
 						<Menu theme={menuTheme} mode="inline" items={items} />
 					</Sider>
-					<Content style={{ padding: '0px', height: '100%' }}>
+					<Content style={{ padding: '50px 0px 0px 0px', height: '100%' }}>
 						<div
 							style={{
-								padding: '5px',
+								padding: '30px 5px 5px 5px',
 								background: colorBgContainer,
 								minHeight: '95vh',
 							}}
