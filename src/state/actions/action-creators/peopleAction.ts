@@ -56,12 +56,13 @@ export const addPeople = (id: any) => async (dispatch: any) => {
 
 // Used by driver
 export const updateNote =
-	(id: any, note: any, carId: any, roomId: any) => async (dispatch: any) => {
+	(id: any, note: any, carId: any, roomId: any, isRoomMaster: any) =>
+	async (dispatch: any) => {
 		dispatch({ type: ActionType.UPDATING_PEOPLE });
 
 		await axios.post(
 			keys.BASE_URL + '/api/people/updateNoteByDriver',
-			{ id, note, carId, roomId },
+			{ id, note, carId, roomId, isRoomMaster },
 			{
 				headers: authHeader(),
 			}
@@ -72,12 +73,28 @@ export const updateNote =
 
 // Used by admin
 export const updatePeople =
-	(id: any, note: any, carId: any, roomId: any) => async (dispatch: any) => {
+	(id: any, note: any, carId: any, roomId: any, isRoomMaster: any) =>
+	async (dispatch: any) => {
 		dispatch({ type: ActionType.UPDATING_PEOPLE });
 
 		await axios.post(
 			keys.BASE_URL + '/api/people/updatePeopleDrive',
-			{ id, note, carId, roomId },
+			{ id, note, carId, roomId, isRoomMaster },
+			{
+				headers: authHeader(),
+			}
+		);
+
+		dispatch({ type: ActionType.PEOPLE_UPDATED });
+	};
+
+export const updateHoldRoomKey =
+	(id: any, isHoldRoomKey: any) => async (dispatch: any) => {
+		dispatch({ type: ActionType.UPDATING_PEOPLE });
+
+		await axios.post(
+			keys.BASE_URL + '/api/people/holdKey',
+			{ id, isHoldRoomKey },
 			{
 				headers: authHeader(),
 			}

@@ -38,6 +38,7 @@ import {
 	Switch,
 	Divider,
 	Typography,
+	ConfigProvider,
 } from 'antd';
 import type { MenuProps, MenuTheme } from 'antd/es/menu';
 import { RootState } from 'state/reducers';
@@ -131,85 +132,93 @@ const RepoTwo: React.FC = () => {
 	}, []);
 
 	return (
-		<Layout style={{ minHeight: '100vh', overflow: 'hidden' }}>
-			<Header style={{ padding: 0, background: colorBgContainer }}>
-				<Row
-					justify="space-between"
-					style={{
-						height: '100%',
-					}}
-				>
-					<Col>
-						<>
-							{React.createElement(MenuOutlined, {
-								className: 'trigger',
-								style: { padding: '15px', fontSize: '20px' },
-								onClick: (e) => {
-									e.stopPropagation();
-									setCollapsed(!collapsed);
-								},
-							})}
-						</>
-					</Col>
-					<Col
+		<ConfigProvider
+			theme={{
+				token: {
+					colorPrimary: '#00b96b',
+				},
+			}}
+		>
+			<Layout style={{ minHeight: '100vh', overflow: 'hidden' }}>
+				<Header style={{ padding: 0, background: colorBgContainer }}>
+					<Row
+						justify="space-between"
 						style={{
-							display: 'inline-flex',
-							alignItems: 'center',
+							height: '100%',
 						}}
 					>
-						<Link
-							to={'/home'}
+						<Col>
+							<>
+								{React.createElement(MenuOutlined, {
+									className: 'trigger',
+									style: { padding: '15px', fontSize: '20px' },
+									onClick: (e) => {
+										e.stopPropagation();
+										setCollapsed(!collapsed);
+									},
+								})}
+							</>
+						</Col>
+						<Col
 							style={{
-								margin: '0px 15px 0px 10px',
-								padding: '0px',
-								height: '50px',
+								display: 'inline-flex',
+								alignItems: 'center',
 							}}
 						>
-							<Logo style={{ width: '50px', height: '50px' }} />
-						</Link>
-					</Col>
-				</Row>
-			</Header>
-			<Layout>
-				<Sider
-					onClick={(e) => e.stopPropagation()}
-					theme={menuTheme}
-					trigger={null}
-					collapsible
-					collapsed={collapsed}
-					collapsedWidth="0"
-					style={{
-						position: 'fixed',
-						top: '60px',
-						left: '0',
-						bottom: '0',
-						zIndex: '99',
-					}}
-				>
-					<div className="logo" />
-					<Switch
-						checkedChildren="Dark"
-						unCheckedChildren="Light"
-						onChange={changeTheme}
-						style={{ margin: '10px' }}
-					/>
-					<Menu theme={menuTheme} mode="inline" items={items} />
-				</Sider>
-				<Content style={{ padding: '0px' }}>
-					<div
+							<Link
+								to={'/home'}
+								style={{
+									margin: '0px 15px 0px 10px',
+									padding: '0px',
+									height: '50px',
+								}}
+							>
+								<Logo style={{ width: '50px', height: '50px' }} />
+							</Link>
+						</Col>
+					</Row>
+				</Header>
+				<Layout>
+					<Sider
+						onClick={(e) => e.stopPropagation()}
+						theme={menuTheme}
+						trigger={null}
+						collapsible
+						collapsed={collapsed}
+						collapsedWidth="0"
 						style={{
-							padding: 5,
-							background: colorBgContainer,
+							position: 'fixed',
+							top: '60px',
+							left: '0',
+							bottom: '0',
+							zIndex: '99',
 						}}
 					>
-						<Outlet />
-					</div>
-				</Content>
+						<div className="logo" />
+						<Switch
+							checkedChildren="Dark"
+							unCheckedChildren="Light"
+							onChange={changeTheme}
+							style={{ margin: '10px' }}
+						/>
+						<Menu theme={menuTheme} mode="inline" items={items} />
+					</Sider>
+					<Content style={{ padding: '0px' }}>
+						<div
+							style={{
+								padding: 5,
+								background: colorBgContainer,
+							}}
+						>
+							<Outlet />
+						</div>
+					</Content>
+				</Layout>
+				<Footer style={{ textAlign: 'center' }}>
+					FE Team ©2023 Created by Heart
+				</Footer>
 			</Layout>
-			<Footer style={{ textAlign: 'center' }}>
-				FE Team ©2023 Created by Heart
-			</Footer>
-		</Layout>
+		</ConfigProvider>
 	);
 };
 

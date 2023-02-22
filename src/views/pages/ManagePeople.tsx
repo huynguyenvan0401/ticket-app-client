@@ -12,6 +12,8 @@ import {
 	LockOutlined,
 	EditOutlined,
 	CheckCircleTwoTone,
+	KeyOutlined,
+	CloseOutlined,
 	CloseCircleTwoTone,
 } from '@ant-design/icons';
 import type { InputRef } from 'antd';
@@ -28,6 +30,7 @@ import {
 	Tag,
 	Modal,
 	Input,
+	Switch,
 } from 'antd';
 import type { ColumnType, ColumnsType, TableProps } from 'antd/es/table';
 import type {
@@ -54,6 +57,7 @@ interface DataType {
 	roomNumber: string;
 	checkin: string;
 	isRoomMaster: string;
+	isHoldRoomKey: string;
 }
 
 type DataIndex = keyof DataType;
@@ -62,10 +66,8 @@ const App: React.FC = () => {
 	// Bind actions
 	const dispatch = useDispatch();
 
-	const { fetchPeopleCheckin, updatePeople } = bindActionCreators(
-		peopleAction,
-		useDispatch()
-	);
+	const { fetchPeopleCheckin, updatePeople, updateHoldRoomKey } =
+		bindActionCreators(peopleAction, useDispatch());
 
 	const { fetchCar } = bindActionCreators(carAction, useDispatch());
 	const { fetchRoom } = bindActionCreators(roomAction, useDispatch());
@@ -98,6 +100,7 @@ const App: React.FC = () => {
 	const [filteredInfo, setFilteredInfo] = useState<
 		Record<string, FilterValue | null>
 	>({});
+	const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({});
 
 	const clearTableFilters = () => {
 		setFilteredInfo({});
@@ -118,6 +121,7 @@ const App: React.FC = () => {
 				roomType: people.roomType,
 				roomNumber: people.roomNumber,
 				isRoomMaster: people.isRoomMaster ? 'true' : 'false',
+				isHoldRoomKey: people.isHoldRoomKey ? 'true' : 'false',
 			}))
 		);
 	};
@@ -129,6 +133,15 @@ const App: React.FC = () => {
 		extra
 	) => {
 		setFilteredInfo(filters);
+		setSortedInfo(sorter as SorterResult<DataType>);
+	};
+
+	// Sort room number
+	const setRoomNumberSort = () => {
+		setSortedInfo({
+			order: 'ascend',
+			columnKey: 'roomNumber',
+		});
 	};
 
 	// Modal
@@ -139,11 +152,13 @@ const App: React.FC = () => {
 		note: any;
 		carId: any;
 		roomId: any;
+		isRoomMaster: any;
 	}>({
 		id: '',
 		note: '',
 		carId: '',
 		roomId: '',
+		isRoomMaster: '',
 	});
 
 	const showModal = () => {
@@ -157,7 +172,8 @@ const App: React.FC = () => {
 					editNote.id,
 					editNote.note,
 					editNote.carId,
-					editNote.roomId
+					editNote.roomId,
+					editNote.isRoomMaster
 				),
 			]);
 			fetchPeopleCheckin();
@@ -179,6 +195,15 @@ const App: React.FC = () => {
 	};
 
 	const onSearchCar = (value: string) => {};
+
+	const onRoomMasterChange = (value: string) => {
+		setEditNote((prev) => {
+			return {
+				...prev,
+				isRoomMaster: value,
+			};
+		});
+	};
 
 	// Modal confirm reset checkin
 	const [isModalResetOpen, setIsModalResetOpen] = useState(false);
@@ -318,6 +343,7 @@ const App: React.FC = () => {
 										note: record.note,
 										carId: record.carId,
 										roomId: record.roomId,
+										isRoomMaster: record.isRoomMaster,
 									});
 									showModal();
 								}}
@@ -351,6 +377,60 @@ const App: React.FC = () => {
 					);
 				},
 				width: '8%',
+			},
+			{
+				title: 'Chìa khóa',
+				dataIndex: 'isHoldRoomKey',
+				filteredValue: filteredInfo.isHoldRoomKey || null,
+				filters: [
+					{
+						text: 'Cầm chìa khóa',
+						value: 'true',
+					},
+					{
+						text: 'Không cầm chìa khóa',
+						value: 'false',
+					},
+				],
+				onFilter: (value: any, record: any) =>
+					record.isHoldRoomKey.startsWith(value),
+				filterMode: 'tree',
+				width: '8%',
+				render: (_: any, record: any) => {
+					return (
+						<>
+							{record.isHoldRoomKey === 'true' ? (
+								<Switch
+									checkedChildren={<KeyOutlined />}
+									unCheckedChildren={<CloseOutlined />}
+									defaultChecked
+									onChange={() => {
+										void (async () => {
+											await Promise.all([
+												updateHoldRoomKey(record.key, 'false'),
+											]);
+											fetchPeopleCheckin();
+										})();
+									}}
+								/>
+							) : (
+								<Switch
+									checkedChildren={<KeyOutlined />}
+									unCheckedChildren={<CloseOutlined />}
+									defaultChecked={false}
+									onChange={() => {
+										void (async () => {
+											await Promise.all([
+												updateHoldRoomKey(record.key, 'true'),
+											]);
+											fetchPeopleCheckin();
+										})();
+									}}
+								/>
+							)}
+						</>
+					);
+				},
 			},
 			{
 				title: 'Tên',
@@ -449,9 +529,13 @@ const App: React.FC = () => {
 			{
 				title: 'Phòng',
 				dataIndex: 'roomNumber',
+				key: 'roomNumber',
 				filteredValue: filteredInfo.roomNumber || null,
 				width: '8%',
 				...getColumnSearchProps('roomNumber'),
+				sorter: (a, b) => Number(a.roomNumber) - Number(b.roomNumber),
+				sortOrder:
+					sortedInfo.columnKey === 'roomNumber' ? sortedInfo.order : 'ascend',
 			},
 			{
 				title: 'Khu',
@@ -491,6 +575,12 @@ const App: React.FC = () => {
 				Danh sách checkin
 			</Title>
 			<Button
+				onClick={setRoomNumberSort}
+				style={{ marginBottom: '20px', marginRight: '20px' }}
+			>
+				Group by Room
+			</Button>
+			<Button
 				onClick={clearTableFilters}
 				style={{ marginBottom: '20px', marginRight: '20px' }}
 			>
@@ -526,6 +616,31 @@ const App: React.FC = () => {
 							value: car.id.toString(),
 						}))
 					}
+				/>
+
+				<Select
+					style={{ marginBottom: '20px', width: '240px' }}
+					showSearch
+					value={editNote.isRoomMaster}
+					placeholder="Vai trò..."
+					optionFilterProp="children"
+					onChange={onRoomMasterChange}
+					filterOption={(input, option) =>
+						(option?.label ?? '')
+							.toString()
+							.toLowerCase()
+							.includes(input.toLowerCase())
+					}
+					options={[
+						{
+							label: 'Trưởng phòng',
+							value: 'true',
+						},
+						{
+							label: 'Không là trưởng phòng',
+							value: 'false',
+						},
+					]}
 				/>
 
 				<Select

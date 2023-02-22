@@ -30,3 +30,10 @@ code {
 .ant-table-cell {
 	padding: 8px !important;
 }
+
+.flex-center {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
+}

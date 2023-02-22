@@ -51,6 +51,7 @@ interface DataType {
 	roomNumber: string;
 	checkin: string;
 	isRoomMaster: string;
+	isHoldRoomKey: string;
 }
 
 type DataIndex = keyof DataType;
@@ -106,6 +107,7 @@ const ViewPeopleCheckin: React.FC = () => {
 				roomType: people.roomType,
 				roomNumber: people.roomNumber,
 				isRoomMaster: people.isRoomMaster ? 'true' : 'false',
+				isHoldRoomKey: people.isHoldRoomKey ? 'true' : 'false',
 			}))
 		);
 	};
@@ -228,36 +230,104 @@ const ViewPeopleCheckin: React.FC = () => {
 				title: 'Tên',
 				dataIndex: 'account',
 				filteredValue: filteredInfo.account || null,
-				width: '12%',
+				width: '10%',
 				...getColumnSearchProps('account'),
 			},
 			{
-				title: 'Status',
+				title: 'Checkin',
 				dataIndex: 'checkin',
 				filteredValue: filteredInfo.checkin || null,
 				filters: [
 					{
-						text: 'OK',
+						text: 'Đã checkin',
 						value: 'true',
 					},
 					{
-						text: 'NONE',
+						text: 'Chưa checkin',
 						value: 'false',
 					},
 				],
 				onFilter: (value: any, record: any) => record.checkin.startsWith(value),
 				filterMode: 'tree',
-				width: '8%',
+				width: '10%',
 				render: (_: any, record: any) => {
 					return (
 						<>
 							{record.checkin === 'true' ? (
 								<Tag color="green" key={record.id}>
-									OK
+									Đã checkin
 								</Tag>
 							) : (
 								<Tag color="volcano" key={record.id}>
-									NONE
+									Chưa checkin
+								</Tag>
+							)}
+						</>
+					);
+				},
+			},
+			{
+				title: 'Chủ phòng',
+				dataIndex: 'isRoomMaster',
+				filteredValue: filteredInfo.isRoomMaster || null,
+				filters: [
+					{
+						text: 'Chủ phòng',
+						value: 'true',
+					},
+					{
+						text: 'Không phải chủ phòng',
+						value: 'false',
+					},
+				],
+				onFilter: (value: any, record: any) =>
+					record.isRoomMaster.startsWith(value),
+				filterMode: 'tree',
+				width: '10%',
+				render: (_: any, record: any) => {
+					return (
+						<>
+							{record.isRoomMaster === 'true' ? (
+								<Tag color="green" key={'isRoomMaster' + record.id}>
+									Chủ phòng
+								</Tag>
+							) : (
+								<Tag color="volcano" key={'isRoomMaster' + record.id}>
+									Không
+								</Tag>
+							)}
+						</>
+					);
+				},
+			},
+			{
+				title: 'Chìa khóa',
+				dataIndex: 'isHoldRoomKey',
+				filteredValue: filteredInfo.isHoldRoomKey || null,
+				filters: [
+					{
+						text: 'Giữ chìa khóa',
+						value: 'true',
+					},
+					{
+						text: 'Không giữ chìa khóa',
+						value: 'false',
+					},
+				],
+				onFilter: (value: any, record: any) =>
+					record.isHoldRoomKey.startsWith(value),
+				filterMode: 'tree',
+				width: '10%',
+				render: (_: any, record: any) => {
+					return (
+						<>
+							{record.isHoldRoomKey === 'true' ? (
+								<Tag color="green" key={'roomKey' + record.id}>
+									Giữ chìa khóa
+								</Tag>
+							) : (
+								<Tag color="volcano" key={'roomKey' + record.id}>
+									Không giữ
 								</Tag>
 							)}
 						</>
@@ -268,66 +338,35 @@ const ViewPeopleCheckin: React.FC = () => {
 				title: 'Xe',
 				dataIndex: 'licensePlate',
 				filteredValue: filteredInfo.licensePlate || null,
-				width: '13%',
+				width: '15%',
 				...getColumnSearchProps('licensePlate'),
 			},
 			{
 				title: 'Phòng',
 				dataIndex: 'roomNumber',
+				key: 'roomNumber',
 				filteredValue: filteredInfo.roomNumber || null,
-				width: '8%',
+				width: '10%',
 				...getColumnSearchProps('roomNumber'),
+				defaultSortOrder: 'ascend',
+				sorter: (a, b) => Number(a.roomNumber) - Number(b.roomNumber),
 			},
 			{
 				title: 'Khu',
 				dataIndex: 'roomType',
 				filteredValue: filteredInfo.roomType || null,
-				width: '14%',
+				width: '13%',
 				...getColumnSearchProps('roomType'),
 			},
 			{
 				title: 'SĐT',
 				dataIndex: 'phoneNumber',
-				width: '12%',
-			},
-			{
-				title: 'Chủ phòng',
-				dataIndex: 'isRoomMaster',
-				filteredValue: filteredInfo.isRoomMaster || null,
-				filters: [
-					{
-						text: 'YES',
-						value: 'true',
-					},
-					{
-						text: 'NO',
-						value: 'false',
-					},
-				],
-				onFilter: (value: any, record: any) =>
-					record.isRoomMaster.startsWith(value),
-				filterMode: 'tree',
-				width: '6%',
-				render: (_: any, record: any) => {
-					return (
-						<>
-							{record.isRoomMaster === 'true' ? (
-								<Tag color="green" key={'isRoomMaster' + record.id}>
-									YES
-								</Tag>
-							) : (
-								<Tag color="volcano" key={'isRoomMaster' + record.id}>
-									NO
-								</Tag>
-							)}
-						</>
-					);
-				},
+				width: '10%',
 			},
 			{
 				title: 'Ghi chú',
 				dataIndex: 'note',
-				width: '27%',
+				width: '12%',
 				ellipsis: {
 					showTitle: false,
 				},
@@ -358,7 +397,7 @@ const ViewPeopleCheckin: React.FC = () => {
 					columns={peopleStore.data && getColumns()}
 					dataSource={peopleStore.data && getData()}
 					onChange={onChange}
-					style={{ minWidth: '1000px' }}
+					style={{ minWidth: '1200px' }}
 					pagination={false}
 				/>
 			</div>
