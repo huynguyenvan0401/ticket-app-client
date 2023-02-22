@@ -330,13 +330,13 @@ const App: React.FC = () => {
 	const getColumns = (): ColumnsType<DataType> => {
 		return [
 			{
-				title: 'Action',
+				title: 'Thao tác',
 				key: 'action',
 				render: (_: any, record: any) => {
 					return (
 						<>
 							<EditOutlined
-								style={{ cursor: 'pointer' }}
+								style={{ cursor: 'pointer', fontSize: '24px' }}
 								onClick={() => {
 									setEditNote({
 										id: record.key,
@@ -350,7 +350,11 @@ const App: React.FC = () => {
 							/>
 							{record.checkin === 'true' ? (
 								<CloseCircleTwoTone
-									style={{ cursor: 'pointer', marginLeft: '20px' }}
+									style={{
+										cursor: 'pointer',
+										marginLeft: '20px',
+										fontSize: '24px',
+									}}
 									twoToneColor="#eb2f96"
 									onClick={() => {
 										void (async () => {
@@ -362,7 +366,11 @@ const App: React.FC = () => {
 							) : (
 								<CheckCircleTwoTone
 									twoToneColor="#52c41a"
-									style={{ cursor: 'pointer', marginLeft: '20px' }}
+									style={{
+										cursor: 'pointer',
+										marginLeft: '20px',
+										fontSize: '24px',
+									}}
 									onClick={() => {
 										void (async () => {
 											await Promise.all([
@@ -384,18 +392,18 @@ const App: React.FC = () => {
 				filteredValue: filteredInfo.isHoldRoomKey || null,
 				filters: [
 					{
-						text: 'Cầm chìa khóa',
+						text: 'Giữ chìa khóa',
 						value: 'true',
 					},
 					{
-						text: 'Không cầm chìa khóa',
+						text: 'Không giữ chìa khóa',
 						value: 'false',
 					},
 				],
 				onFilter: (value: any, record: any) =>
 					record.isHoldRoomKey.startsWith(value),
 				filterMode: 'tree',
-				width: '8%',
+				width: '6%',
 				render: (_: any, record: any) => {
 					return (
 						<>
@@ -436,36 +444,36 @@ const App: React.FC = () => {
 				title: 'Tên',
 				dataIndex: 'account',
 				filteredValue: filteredInfo.account || null,
-				width: '12%',
+				width: '11%',
 				...getColumnSearchProps('account'),
 			},
 			{
-				title: 'Status',
+				title: 'Checkin',
 				dataIndex: 'checkin',
 				filteredValue: filteredInfo.checkin || null,
 				filters: [
 					{
-						text: 'OK',
+						text: 'Đã checkin',
 						value: 'true',
 					},
 					{
-						text: 'NONE',
+						text: 'Chưa checkin',
 						value: 'false',
 					},
 				],
 				onFilter: (value: any, record: any) => record.checkin.startsWith(value),
 				filterMode: 'tree',
-				width: '8%',
+				width: '10%',
 				render: (_: any, record: any) => {
 					return (
 						<>
 							{record.checkin === 'true' ? (
 								<Tag color="green" key={record.id}>
-									OK
+									Đã checkin
 								</Tag>
 							) : (
 								<Tag color="volcano" key={record.id}>
-									NONE
+									Chưa checkin
 								</Tag>
 							)}
 						</>
@@ -473,33 +481,44 @@ const App: React.FC = () => {
 				},
 			},
 			{
+				title: 'Phòng',
+				dataIndex: 'roomNumber',
+				key: 'roomNumber',
+				filteredValue: filteredInfo.roomNumber || null,
+				width: '8%',
+				...getColumnSearchProps('roomNumber'),
+				sorter: (a, b) => Number(a.roomNumber) - Number(b.roomNumber),
+				sortOrder:
+					sortedInfo.columnKey === 'roomNumber' ? sortedInfo.order : 'ascend',
+			},
+			{
 				title: 'Chủ phòng',
 				dataIndex: 'isRoomMaster',
 				filteredValue: filteredInfo.isRoomMaster || null,
 				filters: [
 					{
-						text: 'YES',
+						text: 'Chủ phòng',
 						value: 'true',
 					},
 					{
-						text: 'NO',
+						text: 'Không là chủ phòng',
 						value: 'false',
 					},
 				],
 				onFilter: (value: any, record: any) =>
 					record.isRoomMaster.startsWith(value),
 				filterMode: 'tree',
-				width: '6%',
+				width: '8%',
 				render: (_: any, record: any) => {
 					return (
 						<>
 							{record.isRoomMaster === 'true' ? (
 								<Tag color="green" key={'isRoomMaster' + record.id}>
-									YES
+									Chủ phòng
 								</Tag>
 							) : (
 								<Tag color="volcano" key={'isRoomMaster' + record.id}>
-									NO
+									NONE
 								</Tag>
 							)}
 						</>
@@ -509,7 +528,7 @@ const App: React.FC = () => {
 			{
 				title: 'Ghi chú',
 				dataIndex: 'note',
-				width: '19%',
+				width: '10%',
 				ellipsis: {
 					showTitle: false,
 				},
@@ -526,17 +545,7 @@ const App: React.FC = () => {
 				width: '14%',
 				...getColumnSearchProps('licensePlate'),
 			},
-			{
-				title: 'Phòng',
-				dataIndex: 'roomNumber',
-				key: 'roomNumber',
-				filteredValue: filteredInfo.roomNumber || null,
-				width: '8%',
-				...getColumnSearchProps('roomNumber'),
-				sorter: (a, b) => Number(a.roomNumber) - Number(b.roomNumber),
-				sortOrder:
-					sortedInfo.columnKey === 'roomNumber' ? sortedInfo.order : 'ascend',
-			},
+
 			{
 				title: 'Khu',
 				dataIndex: 'roomType',
@@ -693,7 +702,7 @@ const App: React.FC = () => {
 					columns={peopleStore.data && getColumns()}
 					dataSource={peopleStore.data && getData()}
 					onChange={onChange}
-					style={{ minWidth: '1000px' }}
+					style={{ minWidth: '1200px' }}
 					pagination={false}
 				/>
 			</div>

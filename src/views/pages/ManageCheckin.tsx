@@ -372,7 +372,7 @@ const App: React.FC = () => {
 				onFilter: (value: any, record: any) =>
 					record.isHoldRoomKey.startsWith(value),
 				filterMode: 'tree',
-				width: '5%',
+				width: '6%',
 				render: (_: any, record: any) => {
 					return (
 						<>
@@ -456,7 +456,7 @@ const App: React.FC = () => {
 				dataIndex: 'roomNumber',
 				key: 'roomNumber',
 				filteredValue: filteredInfo.roomNumber || null,
-				width: '10%',
+				width: '8%',
 				...getColumnSearchProps('roomNumber'),
 				sorter: (a, b) => Number(a.roomNumber) - Number(b.roomNumber),
 				sortOrder:
@@ -480,7 +480,7 @@ const App: React.FC = () => {
 				onFilter: (value: any, record: any) =>
 					record.isRoomMaster.startsWith(value),
 				filterMode: 'tree',
-				width: '10%',
+				width: '8%',
 				render: (_: any, record: any) => {
 					return (
 						<>
@@ -500,7 +500,7 @@ const App: React.FC = () => {
 			{
 				title: 'Ghi chú',
 				dataIndex: 'note',
-				width: '15%',
+				width: '10%',
 				ellipsis: {
 					showTitle: false,
 				},
@@ -513,20 +513,20 @@ const App: React.FC = () => {
 			{
 				title: 'Xe',
 				dataIndex: 'licensePlate',
-				width: '10%',
+				width: '15%',
 			},
 
 			{
 				title: 'Khu',
 				dataIndex: 'roomType',
 				filteredValue: filteredInfo.roomType || null,
-				width: '10%',
+				width: '13%',
 				...getColumnSearchProps('roomType'),
 			},
 			{
 				title: 'SĐT',
 				dataIndex: 'phoneNumber',
-				width: '10%',
+				width: '12%',
 			},
 		];
 	};
