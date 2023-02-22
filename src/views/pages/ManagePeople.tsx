@@ -82,12 +82,12 @@ const App: React.FC = () => {
 	}, []);
 
 	// auto refresh data
-	useEffect(() => {
-		const interval = setInterval(() => {
-			fetchPeopleCheckin();
-		}, 15000);
-		return () => clearInterval(interval);
-	}, []);
+	// useEffect(() => {
+	// 	const interval = setInterval(() => {
+	// 		fetchPeopleCheckin();
+	// 	}, 15000);
+	// 	return () => clearInterval(interval);
+	// }, []);
 
 	// Retrieve data from store
 	const message: Message = useSelector((state: RootState) => state.message);

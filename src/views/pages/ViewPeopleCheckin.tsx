@@ -71,12 +71,12 @@ const ViewPeopleCheckin: React.FC = () => {
 	}, []);
 
 	// auto refresh data
-	useEffect(() => {
-		const interval = setInterval(() => {
-			fetchPeopleCheckin();
-		}, 15000);
-		return () => clearInterval(interval);
-	}, []);
+	// useEffect(() => {
+	// 	const interval = setInterval(() => {
+	// 		fetchPeopleCheckin();
+	// 	}, 15000);
+	// 	return () => clearInterval(interval);
+	// }, []);
 
 	// Retrieve data from store
 	const message: Message = useSelector((state: RootState) => state.message);
@@ -276,7 +276,7 @@ const ViewPeopleCheckin: React.FC = () => {
 						value: 'true',
 					},
 					{
-						text: 'Không phải chủ phòng',
+						text: 'Không là chủ phòng',
 						value: 'false',
 					},
 				],

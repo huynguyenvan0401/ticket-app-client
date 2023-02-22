@@ -95,13 +95,13 @@ const App: React.FC = () => {
 		dispatch({ type: ActionType.CLEAR_MESSAGE });
 	}, []);
 
-	useEffect(() => {
-		const interval = setInterval(() => {
-			fetchPeopleCheckinDrive();
-			fetchAccountByDriver();
-		}, 15000);
-		return () => clearInterval(interval);
-	}, []);
+	// useEffect(() => {
+	// 	const interval = setInterval(() => {
+	// 		fetchPeopleCheckinDrive();
+	// 		fetchAccountByDriver();
+	// 	}, 15000);
+	// 	return () => clearInterval(interval);
+	// }, []);
 
 	// Configure data table
 
