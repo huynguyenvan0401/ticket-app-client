@@ -62,7 +62,13 @@ export const updateNote =
 
 		await axios.post(
 			keys.BASE_URL + '/api/people/updateNoteByDriver',
-			{ id, note, carId, roomId, isRoomMaster },
+			{
+				id,
+				note,
+				carId: Number(carId) ? Number(carId) : null,
+				roomId: Number(roomId) ? Number(roomId) : null,
+				isRoomMaster,
+			},
 			{
 				headers: authHeader(),
 			}
@@ -79,7 +85,13 @@ export const updatePeople =
 
 		await axios.post(
 			keys.BASE_URL + '/api/people/updatePeopleDrive',
-			{ id, note, carId, roomId, isRoomMaster },
+			{
+				id,
+				note,
+				carId: Number(carId) ? Number(carId) : null,
+				roomId: Number(roomId) ? Number(roomId) : null,
+				isRoomMaster,
+			},
 			{
 				headers: authHeader(),
 			}
