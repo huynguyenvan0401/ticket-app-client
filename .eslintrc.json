@@ -67,7 +67,7 @@
 		"react-hooks/exhaustive-deps": "off",
 		// Enforce the use of the shorthand syntax.
 		"object-shorthand": "error",
-		"no-console": "warn",
+		"no-console": "off",
 		"import/no-unresolved": "off",
 		"default-param-last": "off",
 		"@typescript-eslint/default-param-last": "off",
